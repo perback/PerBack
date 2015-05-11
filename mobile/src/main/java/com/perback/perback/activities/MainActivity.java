@@ -13,6 +13,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void setData() {
         super.setData();
-        TestActivity.launch(this);
+        MapActivity.launch(this);
     }
 }
