@@ -54,6 +54,8 @@ public class Dao extends BaseDao {
     public void saveTrip(Trip trip) {
         if(trips==null) {
             trips = readTrips();
+            if(trips==null)
+                trips = new ArrayList<>();
         }
         trips.add(trip);
         writeTrips(trips);
