@@ -1,7 +1,7 @@
 package com.perback.perback.activities;
 
 import com.perback.perback.R;
-import com.perback.perback.base.BaseActivity;
+import com.perback.perback.x_base.BaseActivity;
 
 public class MainActivity extends BaseActivity {
 
@@ -13,6 +13,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void setData() {
         super.setData();
-        MapActivity.launch(this);
+        TripTestActivity.launch(this);
+        finish();
     }
 }

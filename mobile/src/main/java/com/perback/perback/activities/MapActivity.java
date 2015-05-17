@@ -3,7 +3,7 @@ package com.perback.perback.activities;
 import android.content.Intent;
 
 import com.perback.perback.R;
-import com.perback.perback.base.BaseActivity;
+import com.perback.perback.x_base.BaseActivity;
 
 public class MapActivity extends BaseActivity {
 
