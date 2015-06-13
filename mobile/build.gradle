@@ -35,4 +35,6 @@ dependencies {
 
     compile 'frankiesardo:icepick:3.0.2'
     provided 'frankiesardo:icepick-processor:3.0.2'
+
+    compile 'com.android.support:design:22.2.0'
 }
