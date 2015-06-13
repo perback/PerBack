@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 public abstract class BaseActivity extends FragmentActivity
@@ -44,5 +45,10 @@ public abstract class BaseActivity extends FragmentActivity
 	}
 
 	public void showMessage(String message, DialogInterface.OnClickListener clickListener) {
+		new AlertDialog.Builder(BaseActivity.this)
+				.setMessage(message)
+				.setPositiveButton("OK", clickListener)
+				.setCancelable(clickListener==null)
+				.show();
 	}
 }

@@ -1,5 +1,8 @@
 package com.perback.perback.activities;
 
+import android.app.Activity;
+import android.content.DialogInterface;
+
 import com.perback.perback.R;
 import com.perback.perback.apis.ean.PingResponse;
 import com.perback.perback.dao.Dao;
@@ -21,11 +24,26 @@ public class SplashActivity extends BaseActivitySplash {
     }
 
     @Override
+    protected Class<? extends Activity> getNextActivity() {
+        return MainActivity.class;
+    }
+
+    @Override
     protected ArrayList<Runnable> getOperations() {
         ArrayList<Runnable> operations = new ArrayList<>();
+        operations.add(getTestOperation());
         operations.add(getIpCheckOperation());
         operations.add(getEanPingOperation());
         return operations;
+    }
+
+    private Runnable getTestOperation() {
+        return new Runnable() {
+            @Override
+            public void run() {
+                operationDone();
+            }
+        };
     }
 
     private Runnable getIpCheckOperation() {
@@ -39,7 +57,13 @@ public class SplashActivity extends BaseActivitySplash {
                         public void success(Response response, Response response2) {
                             String ip = new String(((TypedByteArray)response.getBody()).getBytes());
                             Dao.getInstance().writeIp(ip);
-                            operationDone();
+                            showMessage("Ip: " + ip, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    operationDone();
+                                }
+                            });
+
                         }
 
                         @Override
@@ -61,12 +85,23 @@ public class SplashActivity extends BaseActivitySplash {
                 RetrofitUtils.getEanApi(SplashActivity.this).ping("Test message", new Callback<PingResponse>() {
                     @Override
                     public void success(PingResponse pingResponse, Response response) {
-                        operationDone();
+                        showMessage("Ping Success", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                operationDone();
+                            }
+                        });
+
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
-                        operationDone();
+                        showMessage("Ping Failure: " + error, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                operationDone();
+                            }
+                        });
                     }
                 });
             }

@@ -6,7 +6,7 @@ import retrofit.http.GET;
 
 public interface IpifyApi {
 
-    @GET("")
+    @GET("/")
     void getIp(Callback<Response> responseCallback);
 
 }
