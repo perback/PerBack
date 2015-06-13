@@ -13,6 +13,8 @@ public class Dao extends BaseDao {
 
     private static final String LOCATION = "Dao.UserLocation";
     private static final String TRIPS = "Dao.UserTrips";
+    private static final String IP = "Dao.UserIp";
+    private static final String EAN_SESSION = "Dao.EanSession";
 
     private static Dao instance;
     private static ArrayList<Trip> trips;
@@ -34,6 +36,22 @@ public class Dao extends BaseDao {
 
     public static Dao getInstance() {
         return instance;
+    }
+
+    public void writeEanSession(String session) {
+        write(StorageMethod.InternalFiles, session, EAN_SESSION);
+    }
+
+    public String readEanSession() {
+        return (String) read(StorageMethod.InternalFiles, EAN_SESSION);
+    }
+
+    public void writeIp(String ip) {
+        write(StorageMethod.InternalFiles, ip, IP);
+    }
+
+    public String readIp() {
+        return (String) read(StorageMethod.InternalFiles, IP);
     }
 
     public void writeLocation(TripPoint tripPoint) {

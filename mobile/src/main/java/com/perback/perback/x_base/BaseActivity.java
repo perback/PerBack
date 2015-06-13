@@ -1,5 +1,6 @@
 package com.perback.perback.x_base;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -40,5 +41,8 @@ public abstract class BaseActivity extends FragmentActivity
 	{
 		super.setContentView(view);
 		linkUI();
+	}
+
+	public void showMessage(String message, DialogInterface.OnClickListener clickListener) {
 	}
 }

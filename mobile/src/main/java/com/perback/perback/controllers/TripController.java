@@ -119,6 +119,10 @@ public class TripController {
         context.unregisterReceiver(locationBroadcastReceiver);
     }
 
+//    public double getDistanceLeft() {
+//
+//    }
+
     public TripPoint getLastLocation() {
         return lastLocation;
     }
