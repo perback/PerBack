@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">PerBack</string>
+
+    <!-- Sort options -->
+    <string name="price_asc">Ascending price</string>
+    <string name="price_desc">Descending price</string>
+    <string name="quality_asc">Ascending rating</string>
+    <string name="quality_desc">Descending rating</string>
+    <string name="proximity">Proximity</string>
+    <string name="alpha">Alphabetically</string>
+
 </resources>

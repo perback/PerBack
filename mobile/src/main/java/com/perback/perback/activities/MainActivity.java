@@ -1,7 +1,16 @@
 package com.perback.perback.activities;
 
 import com.perback.perback.R;
+import com.perback.perback.apis.ean.EANCallback;
+import com.perback.perback.apis.ean.HotelListResponse;
+import com.perback.perback.dao.Dao;
+import com.perback.perback.holders.TripPoint;
+import com.perback.perback.utils.RetrofitUtils;
 import com.perback.perback.x_base.BaseActivity;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class MainActivity extends BaseActivity {
 
@@ -13,7 +22,31 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void setData() {
         super.setData();
-        TripTestActivity.launch(this);
-        finish();
+//        TripTestActivity.launch(this);
+//        finish();
+        testHotelList();
+
+
+    }
+
+    private void testHotelList() {
+        TripPoint location = Dao.getInstance().readLocation();
+        if(location!=null) {
+            RetrofitUtils.getEanApi(this).getNearbyHotels(location.getLat(), location.getLng(), new EANCallback<HotelListResponse>() {
+                @Override
+                public void success(HotelListResponse hotelListResponse) {
+                    if (hotelListResponse.isSucces()) {
+                        showMessage("" + hotelListResponse.getHotelList().getHotels().size() + " hotels found!", null);
+                    } else {
+                        showMessage(hotelListResponse.getMessage(), null);
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    showMessage("" + error.getMessage(), null);
+                }
+            });
+        }
     }
 }

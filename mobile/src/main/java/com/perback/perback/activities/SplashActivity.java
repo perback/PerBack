@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 
 import com.perback.perback.R;
+import com.perback.perback.apis.ean.EANCallback;
 import com.perback.perback.apis.ean.PingResponse;
 import com.perback.perback.dao.Dao;
 import com.perback.perback.utils.RetrofitUtils;
@@ -82,16 +83,24 @@ public class SplashActivity extends BaseActivitySplash {
         return new Runnable() {
             @Override
             public void run() {
-                RetrofitUtils.getEanApi(SplashActivity.this).ping("Test message", new Callback<PingResponse>() {
+                RetrofitUtils.getEanApi(SplashActivity.this).ping("Test message", new EANCallback<PingResponse>() {
                     @Override
-                    public void success(PingResponse pingResponse, Response response) {
-                        showMessage("Ping Success", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                operationDone();
-                            }
-                        });
-
+                    public void success(PingResponse pingResponse) {
+                        if(pingResponse.isSucces()) {
+                            showMessage("Ping Success", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    operationDone();
+                                }
+                            });
+                        } else {
+                            showMessage("Error: "+pingResponse.getMessage(), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    operationDone();
+                                }
+                            });
+                        }
                     }
 
                     @Override

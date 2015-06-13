@@ -1,9 +1,11 @@
 package com.perback.perback;
 
 import android.app.Application;
+import android.content.Intent;
 
 import com.perback.perback.controllers.TripController;
 import com.perback.perback.dao.Dao;
+import com.perback.perback.services.LocationService;
 import com.perback.perback.utils.PicassoUtils;
 import com.perback.perback.utils.RetrofitUtils;
 
@@ -20,6 +22,7 @@ public class PerBackApplication extends Application {
         PicassoUtils.init(getApplicationContext());
         TripController.init(getApplicationContext());
         Dao.init(getApplicationContext());
+        startService(new Intent(getApplicationContext(), LocationService.class));
     }
 
     @Override

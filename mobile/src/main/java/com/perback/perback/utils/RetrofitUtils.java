@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.perback.perback.apis.ean.EANApi;
 import com.perback.perback.apis.ean.EANApiWrapper;
 import com.perback.perback.apis.ean.EANDeserializer;
+import com.perback.perback.apis.ean.HotelListResponse;
 import com.perback.perback.apis.ean.PingResponse;
 import com.perback.perback.apis.ip.IpifyApi;
 
@@ -25,6 +26,7 @@ public class RetrofitUtils {
         if(eanAdapter==null) {
             Gson gson = new GsonBuilder()
                             .registerTypeAdapter(PingResponse.class, new EANDeserializer<PingResponse>())
+                            .registerTypeAdapter(HotelListResponse.class, new EANDeserializer<HotelListResponse>())
                             .create();
             eanAdapter = new RestAdapter.Builder()
                     .setConverter(new GsonConverter(gson))
