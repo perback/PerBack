@@ -3,4 +3,5 @@
 
 An android application which acts as a personal helper for backpackers.
 
-PerBack is a college project, for more information, visit [our blog.](http://www.perback.tumblr.com)
+PerBack is a college project.
+<!--, for more information, visit [our blog.](http://www.perback.tumblr.com)-->

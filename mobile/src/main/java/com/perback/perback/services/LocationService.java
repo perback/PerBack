@@ -13,6 +13,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationServices;
 import com.perback.perback.controllers.TripController;
+import com.perback.perback.dao.Dao;
+import com.perback.perback.holders.TripPoint;
 
 public class LocationService extends IntentService implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -30,14 +32,14 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
     }
 
     public void init() {
-        if(googleApiClient == null) {
+        if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(getApplicationContext())
                     .addApi(LocationServices.API)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .build();
         }
-        if(!googleApiClient.isConnected())
+        if (!googleApiClient.isConnected())
             googleApiClient.connect();
     }
 
@@ -53,6 +55,10 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
 
     private void sendResponse() {
         Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        TripPoint tripPoint = new TripPoint(location.getLatitude(), location.getLongitude());
+        Dao dao = Dao.getInstance();
+        if (dao != null)
+            dao.writeLocation(tripPoint);
         Intent response = new Intent(TripController.UPDATE_LOCATION_ACTION);
         response.putExtra(TripController.LOCATION, location);
         sendBroadcast(response);
@@ -69,12 +75,12 @@ public class LocationService extends IntentService implements GoogleApiClient.Co
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.e("Debug", "Connection suspended "+i);
+        Log.e("Debug", "Connection suspended " + i);
 
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e("Debug", "Connection failed: "+connectionResult.getErrorCode());
+        Log.e("Debug", "Connection failed: " + connectionResult.getErrorCode());
     }
 }
