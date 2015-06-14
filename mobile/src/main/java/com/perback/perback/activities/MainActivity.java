@@ -3,7 +3,8 @@ package com.perback.perback.activities;
 import com.perback.perback.R;
 import com.perback.perback.apis.ean.EANCallback;
 import com.perback.perback.apis.ean.HotelListResponse;
-import com.perback.perback.apis.places.BasePlacesResponse;
+import com.perback.perback.apis.places.BaseResponse;
+import com.perback.perback.apis.places.PlaceDetailsResponse;
 import com.perback.perback.apis.places.PlacesResponse;
 import com.perback.perback.dao.Dao;
 import com.perback.perback.holders.TripPoint;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 
 public class MainActivity extends BaseActivity {
 
@@ -34,12 +34,12 @@ public class MainActivity extends BaseActivity {
     }
 
     private void testPlacesApi() {
-        RetrofitUtils.getPlacesApi().testCall(new Callback<BasePlacesResponse<PlacesResponse>>() {
+        RetrofitUtils.getPlacesApi().getPlaceDetails("ChIJ502gwYH7ykARay5ECKvy7RM", new Callback<BaseResponse<PlaceDetailsResponse>>() {
             @Override
-            public void success(BasePlacesResponse<PlacesResponse> placesResponseBasePlacesResponse, Response response) {
+            public void success(BaseResponse<PlaceDetailsResponse> placesResponseBasePlacesResponse, Response response) {
                 if(placesResponseBasePlacesResponse.isSucces()) {
-                    ArrayList<PlacesResponse> placesResponse = placesResponseBasePlacesResponse.getResults();
-                    showMessage("Found "+placesResponse.size()+" places!", null);
+                    PlaceDetailsResponse placeDetailsResponse = placesResponseBasePlacesResponse.getResult();
+                    showMessage("Received "+placeDetailsResponse.getName()+"'s details", null);
                 } else {
                     showMessage("Error", null);
                 }

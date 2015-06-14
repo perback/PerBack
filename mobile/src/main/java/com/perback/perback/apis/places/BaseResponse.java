@@ -4,10 +4,19 @@ import com.perback.perback.x_base.BaseSerializable;
 
 import java.util.ArrayList;
 
-public class BasePlacesResponse<T> extends BaseSerializable {
+public class BaseResponse<T> extends BaseSerializable {
 
     protected String status;
     protected ArrayList<T> results;
+    protected T result;
+
+    public T getResult() {
+        return result;
+    }
+
+    public void setResult(T result) {
+        this.result = result;
+    }
 
     public ArrayList<T> getResults() {
         return results;

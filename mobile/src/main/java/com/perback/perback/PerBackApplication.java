@@ -22,6 +22,9 @@ public class PerBackApplication extends Application {
         PicassoUtils.init(getApplicationContext());
         TripController.init(getApplicationContext());
         Dao.init(getApplicationContext());
+        if(Dao.getInstance().readPlacesRadius()==null){
+            Dao.getInstance().writePlacesRadius(500);
+        }
         startService(new Intent(getApplicationContext(), LocationService.class));
     }
 

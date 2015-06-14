@@ -4,7 +4,6 @@ import com.perback.perback.dao.Dao;
 import com.perback.perback.holders.TripPoint;
 
 import retrofit.Callback;
-import retrofit.client.Response;
 
 public class PlacesApiWrapper {
 
@@ -16,9 +15,21 @@ public class PlacesApiWrapper {
         this.placesApi = placesApi;
     }
 
-    public void testCall(Callback<BasePlacesResponse<PlacesResponse>> callback) {
-        TripPoint locationPoint = Dao.getInstance().readLocation();
-        String location=""+locationPoint.getLat()+","+locationPoint.getLng();
-        placesApi.nearbySearch(API_KEY, location, 500, null, "bank", callback);
+    public void getPlaceDetails(String placeId, Callback<BaseResponse<PlaceDetailsResponse>> callback) {
+        placesApi.getPlaceDetails(API_KEY, placeId, callback);
     }
+
+    public void nearbySearch(Callback<BaseResponse<PlacesResponse>> callback) {
+        nearbySearch(null, null, callback);
+    }
+
+    public void nearbySearch(String name, String types, Callback<BaseResponse<PlacesResponse>> callback) {
+        TripPoint locationPoint = Dao.getInstance().readLocation();
+        String location = "" + locationPoint.getLat() + "," + locationPoint.getLng();
+        Integer radius = Dao.getInstance().readPlacesRadius();
+        if (radius == null)
+            radius = 500;
+        placesApi.nearbySearch(API_KEY, location, radius, name, types, callback);
+    }
+
 }

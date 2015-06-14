@@ -14,6 +14,11 @@ public interface PlacesApi {
                       @Query("location") String location, @Query("radius") Integer radius,
                       @Query("name") String name,
                       @Query("types") String types,
-                      Callback<BasePlacesResponse<PlacesResponse>> callback);
+                      Callback<BaseResponse<PlacesResponse>> callback);
+
+    @GET("/details/json")
+    void getPlaceDetails(@Query("key") String apiKey,
+                         @Query("placeid") String placeId,
+                         Callback<BaseResponse<PlaceDetailsResponse>> callback);
 
 }
