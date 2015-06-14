@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/activity_margin">
+
+    <TextView
+        android:id="@+id/login_tv_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/font_medium"
+        android:text="@string/login_message"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/spacing_60"/>
+
+    <LinearLayout
+        android:layout_below="@+id/login_tv_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_40">
+        <ImageView
+            android:id="@+id/login_iv_facebook"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:src="@drawable/selector_login_iv_facebook"/>
+        <ImageView
+            android:id="@+id/login_iv_twitter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:src="@drawable/selector_login_iv_twitter"/>
+        <ImageView
+            android:id="@+id/login_iv_perback"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:src="@drawable/selector_login_iv_perback"/>
+        </LinearLayout>
+    
+    <Button
+        android:id="@+id/login_btn_skip"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:text="@string/skip"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/activity_margin"/>
+
+</RelativeLayout>

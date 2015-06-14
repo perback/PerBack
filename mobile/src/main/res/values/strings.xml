@@ -1,12 +1,68 @@
 <resources>
     <string name="app_name">PerBack</string>
 
-    <!-- Sort options -->
-    <string name="price_asc">Ascending price</string>
-    <string name="price_desc">Descending price</string>
-    <string name="quality_asc">Ascending rating</string>
-    <string name="quality_desc">Descending rating</string>
-    <string name="proximity">Proximity</string>
-    <string name="alpha">Alphabetically</string>
+    <!-- Activity title -->
+    <string name="title_login_activity">Log in</string>
+    <string name="title_signup_activity">Sign up</string>
+    <string name="title_health_status_activity">Health Status</string>
+    <string name="title_my_trips_activity">My trips</string>
+    <string name="title_map_activity">Map</string>
+    <string name="title_start_trip_activity">Start trip</string>
+    <string name="title_settings_activity">Sttings</string>
+    <string name="title_trip_progress_activity">Trip progress</string>
+
+    <!-- Backup data -->
+    <string name="login_message">In order to back-up all your trip data\nsign in with:</string>
+    <string name="skip">SKIP</string>
+
+    <!-- Navigation Drawer -->
+    <string name="backpaker_name">Backpaker\'s name</string>
+    <string name="item_map">Map</string>
+    <string name="item_start_trip">Start trip</string>
+    <string name="item_my_trips">My trips</string>
+    <string name="item_health_status">Health status</string>
+    <string name="item_settings">Settings</string>
+
+    <!-- Login -->
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Log in</string>
+    <string name="sign_in_with">Or Sign In With </string>
+    <string name="forgot_pass">Forgot password?</string>
+    <string name="sign_up">Sign up</string>
+    <string name="empty_username_error_message">Empty username</string>
+    <string name="empty_password_error_message">Empty Password</string>
+
+    <!-- Register -->
+    <string name="email">Email</string>
+
+    <!-- Start Trip -->
+    <string name="trip_name">Trip name</string>
+    <string name="start_location">Start location</string>
+    <string name="end_location">End location</string>
+    <string name="start_trip">Start trip</string>
+
+    <!-- Settings -->
+    <string name="location_settings">Location settings</string>
+    <string name="update_distance">Update distance</string>
+    <string name="distance_proximity">Distance proximity</string>
+    <string name="display_location">Display my location</string>
+    <string name="legal">Legal</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="privacy">Privacy</string>
+    <string name="account">Account</string>
+    <string name="log_in">Log in</string>
+
+    <!-- Dialogs -->
+    <string name="cancel">Cancel</string>
+    <string name="choose">Choose</string>
+
+    <!-- Health status -->
+    <string name="health_status_bpm">Samsung wearable devices can record\n your heart rate and sync it with your device</string>
+    <string name="steps">Steps</string>
+    <string name="distance">Distance</string>
+    <string name="calories">Calories</string>
+    <string name="goal">Goal: <b>10000</b> steps</string>
+    <string name="title_activity_maps">Map</string>
 
 </resources>

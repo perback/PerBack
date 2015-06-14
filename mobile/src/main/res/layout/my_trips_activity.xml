@@ -10,22 +10,21 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            class="com.google.android.gms.maps.SupportMapFragment"/>
         <include layout="@layout/toolbar" />
 
+        <!--<android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />-->
+
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_check_in"
+            android:id="@+id/fab_add_trip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_marginBottom="@dimen/spacing_20"
             android:layout_marginRight="@dimen/spacing_20"
-            android:src="@drawable/ic_checked_64"
+            android:src="@drawable/ic_plus"
             app:fabSize="normal" />
 
     </RelativeLayout>

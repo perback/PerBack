@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Font sizes -->
+    <dimen name="font_micro">12sp</dimen>
+    <dimen name="font_small">14sp</dimen>
+    <dimen name="font_medium">18sp</dimen>
+    <dimen name="font_large">22sp</dimen>
+    <dimen name="font_extra_large">40sp</dimen>
+
+    <!-- Views size -->
+    <dimen name="button_width">88dp</dimen>
+    <dimen name="button_height">60dp</dimen>
+    <dimen name="edittext_height">60dp</dimen>
+    <dimen name="textview_height">60dp</dimen>
+
+    <!-- General margins -->
+    <dimen name="activity_margin">16dp</dimen>
+    <dimen name="spacing_4">4dp</dimen>
+    <dimen name="spacing_10">10dp</dimen>
+    <dimen name="spacing_20">20dp</dimen>
+    <dimen name="spacing_30">30dp</dimen>
+    <dimen name="spacing_40">40dp</dimen>
+    <dimen name="spacing_50">50dp</dimen>
+    <dimen name="spacing_60">60dp</dimen>
+    <dimen name="spacing_70">70dp</dimen>
+    <dimen name="spacing_80">80dp</dimen>
+
+</resources>

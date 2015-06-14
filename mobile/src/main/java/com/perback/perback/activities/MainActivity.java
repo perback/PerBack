@@ -1,75 +1,76 @@
 package com.perback.perback.activities;
 
+import android.content.Intent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.perback.perback.R;
-import com.perback.perback.apis.ean.EANCallback;
-import com.perback.perback.apis.ean.HotelListResponse;
-import com.perback.perback.apis.places.BaseResponse;
-import com.perback.perback.apis.places.PlaceDetailsResponse;
-import com.perback.perback.apis.places.PlacesResponse;
-import com.perback.perback.dao.Dao;
-import com.perback.perback.holders.TripPoint;
-import com.perback.perback.utils.RetrofitUtils;
 import com.perback.perback.x_base.BaseActivity;
-
-import java.util.ArrayList;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 public class MainActivity extends BaseActivity {
 
+    private ImageView ivFacebook;
+    private ImageView ivTwitter;
+    private ImageView ivPerback;
+    private Button btnSkip;
+
+
     @Override
     protected int getLayoutResId() {
-        return R.layout.main_activity;
+        return R.layout.backup_data_activity;
     }
 
     @Override
     protected void setData() {
         super.setData();
-//        TripTestActivity.launch(this);
-//        finish();
-//        testHotelList();
-        testPlacesApi();
+       /* TripTestActivity.launch(this);
+        finish();*/
     }
 
-    private void testPlacesApi() {
-        RetrofitUtils.getPlacesApi().getPlaceDetails("ChIJ502gwYH7ykARay5ECKvy7RM", new Callback<BaseResponse<PlaceDetailsResponse>>() {
-            @Override
-            public void success(BaseResponse<PlaceDetailsResponse> placesResponseBasePlacesResponse, Response response) {
-                if(placesResponseBasePlacesResponse.isSucces()) {
-                    PlaceDetailsResponse placeDetailsResponse = placesResponseBasePlacesResponse.getResult();
-                    showMessage("Received "+placeDetailsResponse.getName()+"'s details", null);
-                } else {
-                    showMessage("Error", null);
-                }
-            }
+    @Override
+    protected void linkUI() {
+        super.linkUI();
+        ivFacebook = (ImageView) findViewById(R.id.login_iv_facebook);
+        ivTwitter = (ImageView) findViewById(R.id.login_iv_twitter);
+        ivPerback = (ImageView) findViewById(R.id.login_iv_perback);
+        btnSkip = (Button) findViewById(R.id.login_btn_skip);
+    }
 
+    @Override
+    protected void setActions() {
+        super.setActions();
+
+        ivFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void failure(RetrofitError error) {
-                showMessage("Error: "+error.getMessage(), null);
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "Facebook pressed", Toast.LENGTH_SHORT).show();
             }
         });
-    }
 
-    private void testHotelList() {
-        TripPoint location = Dao.getInstance().readLocation();
-        if(location!=null) {
-            RetrofitUtils.getEanApi(this).getNearbyHotels(location.getLat(), location.getLng(), new EANCallback<HotelListResponse>() {
-                @Override
-                public void success(HotelListResponse hotelListResponse) {
-                    if (hotelListResponse.isSucces()) {
-                        showMessage("" + hotelListResponse.getHotelList().getHotels().size() + " hotels found!", null);
-                    } else {
-                        showMessage(hotelListResponse.getMessage(), null);
-                    }
-                }
+        ivTwitter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "Twitter pressed", Toast.LENGTH_SHORT).show();
+            }
+        });
 
-                @Override
-                public void failure(RetrofitError error) {
-                    showMessage("" + error.getMessage(), null);
-                }
-            });
-        }
+        ivPerback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "Perback pressed", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(i);
+            }
+        });
+
+        btnSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "Button Skip pressed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 }
