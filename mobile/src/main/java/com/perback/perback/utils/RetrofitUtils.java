@@ -5,6 +5,8 @@ import android.content.Context;
 import com.google.android.gms.analytics.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.perback.perback.apis.directions.DirectionsApi;
+import com.perback.perback.apis.directions.DirectionsApiWrapper;
 import com.perback.perback.apis.ean.EANApi;
 import com.perback.perback.apis.ean.EANApiWrapper;
 import com.perback.perback.apis.ean.EANDeserializer;
@@ -20,11 +22,23 @@ import retrofit.converter.GsonConverter;
 public class RetrofitUtils {
 
     public static final String PLACES_URL = "https://maps.googleapis.com/maps/api/place";
+    public static final String DIRECTIONS_URL = "https://maps.googleapis.com/maps/api/directions";
     public static final String EAN_URL = "http://api.ean.com/ean-services/rs/hotel/v3";
     public static final String IPIFY_URL = "https://api.ipify.org";
 
     private static RestAdapter eanAdapter;
     private static RestAdapter placesAdapter;
+    private static RestAdapter directionsAdapter;
+
+    private static RestAdapter getDirectionsAdapter() {
+        if(directionsAdapter == null ) {
+            directionsAdapter = new RestAdapter.Builder()
+                    .setEndpoint(DIRECTIONS_URL)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .build();
+        }
+        return directionsAdapter;
+    }
 
     private static RestAdapter getPlacesAdapter() {
         if(placesAdapter == null ) {
@@ -50,6 +64,11 @@ public class RetrofitUtils {
         }
         return eanAdapter;
     }
+
+    public static DirectionsApiWrapper getDirectionsApi() {
+        return new DirectionsApiWrapper(getDirectionsAdapter().create(DirectionsApi.class));
+    }
+
 
     public static PlacesApiWrapper getPlacesApi() {
         return new PlacesApiWrapper(getPlacesAdapter().create(PlacesApi.class));
