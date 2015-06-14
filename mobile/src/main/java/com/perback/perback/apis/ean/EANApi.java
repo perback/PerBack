@@ -11,20 +11,20 @@ public interface EANApi {
     void ping (@Query("cid") String cid, @Query("minorRev") String minorRev,
                @Query("apiKey") String apiKey, @Query("sig") String sig,
                @Query("customerUserAgent") String customerUserAgent,
-//               @Query("customerIpAddress") String customerIpAddress,
                @Query("echo") String echoMessage,
                Callback<PingResponse> callback);
 
+
     @GET("/list")
-    void getNearbyHotels(@Query("customerSessionId") String customerSessionId,
-                         @Query("customerIpAddress") String customerIpAddress,
-                         @Query("cid") String cid, @Query("minorRev") String minorRev,
-                         @Query("apiKey") String apiKey, @Query("sig") String sig,
-                         @Query("apiExperience") String apiExperience,
-                         @Query("customerUserAgent") String customerUserAgent,
+    void getNearbyHotels(@Query("cid") String cid, @Query("minorRev") String minorRev,
+                         @Query("apiKey") String apiKey,
+                         @Query("sig") String sig,
                          @Query("latitude") String latitude, @Query("longitude") String longitude,
                          @Query("searchRadius") Integer searchRadius,
                          @Query("searchRadiusUnit") String searchRadiusUnit,
+                         @Query("propertyCategory") String category,
+                         @Query("minStarRating") Double minStarRating,
+                         @Query("maxStarRating") Double maxStarRating,
                          @Query("sort") String sort,
                          Callback<HotelListResponse> callback);
 

@@ -34,7 +34,7 @@ public class SplashActivity extends BaseActivitySplash {
         ArrayList<Runnable> operations = new ArrayList<>();
         operations.add(getTestOperation());
         operations.add(getIpCheckOperation());
-        operations.add(getEanPingOperation());
+//        operations.add(getEanPingOperation());
         return operations;
     }
 
@@ -51,30 +51,20 @@ public class SplashActivity extends BaseActivitySplash {
         return new Runnable() {
             @Override
             public void run() {
-                if(Dao.getInstance().readIp()==null) {
-                    RetrofitUtils.getIpifyApi().getIp(new Callback<Response>() {
+                RetrofitUtils.getIpifyApi().getIp(new Callback<Response>() {
 
-                        @Override
-                        public void success(Response response, Response response2) {
-                            String ip = new String(((TypedByteArray)response.getBody()).getBytes());
-                            Dao.getInstance().writeIp(ip);
-                            showMessage("Ip: " + ip, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    operationDone();
-                                }
-                            });
+                    @Override
+                    public void success(Response response, Response response2) {
+                        String ip = new String(((TypedByteArray) response.getBody()).getBytes());
+                        Dao.getInstance().writeIp(ip);
+                        operationDone();
+                    }
 
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-                            operationDone();
-                        }
-                    });
-                } else {
-                    operationDone();
-                }
+                    @Override
+                    public void failure(RetrofitError error) {
+                        operationDone();
+                    }
+                });
             }
         };
     }
@@ -86,7 +76,7 @@ public class SplashActivity extends BaseActivitySplash {
                 RetrofitUtils.getEanApi(SplashActivity.this).ping("Test message", new EANCallback<PingResponse>() {
                     @Override
                     public void success(PingResponse pingResponse) {
-                        if(pingResponse.isSucces()) {
+                        if (pingResponse.isSucces()) {
                             showMessage("Ping Success", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -94,7 +84,7 @@ public class SplashActivity extends BaseActivitySplash {
                                 }
                             });
                         } else {
-                            showMessage("Error: "+pingResponse.getMessage(), new DialogInterface.OnClickListener() {
+                            showMessage("Error: " + pingResponse.getMessage(), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     operationDone();

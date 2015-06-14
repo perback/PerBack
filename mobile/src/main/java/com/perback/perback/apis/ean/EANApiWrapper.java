@@ -4,13 +4,16 @@ import android.content.Context;
 import android.webkit.WebView;
 
 import com.perback.perback.dao.Dao;
-import com.perback.perback.utils.Utils;
 
-import retrofit.Callback;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class EANApiWrapper {
 
-    private static final String CID = "490284";
+    //    private static final String CID = "490284";
+    private static final String CID = "55505";
+
     private static final String API_KEY = "1e4i9oqg6vmhmm7qr7e5o0r7u9";
     private static final String SHARED_SECRET = " a0090tmu976g4";
     private static final String MINOR_REV = "29";
@@ -25,10 +28,10 @@ public class EANApiWrapper {
 
     public EANApiWrapper(EANApi eanApi, Context context) {
         this.eanApi = eanApi;
-        if(USER_AGENT.length()==0) {
+        if (USER_AGENT.length() == 0) {
             USER_AGENT = new WebView(context).getSettings().getUserAgentString();
         }
-        if(IP.length()==0) {
+        if (IP.length() == 0) {
             IP = Dao.getInstance().readIp();
         }
     }
@@ -39,27 +42,49 @@ public class EANApiWrapper {
     }
 
     public void getNearbyHotels(double latitude, double longitude, EANCallback<HotelListResponse> callback) {
-        getNearbyHotels(latitude, longitude, null, null, null, callback);
+        getNearbyHotels(latitude, longitude, null, null, null, null, null, null, callback);
 
     }
 
     public void getNearbyHotels(double latitude, double longitude, Integer searchRadius,
                                 String searchRadiusUnit, EANCallback<HotelListResponse> callback) {
-        getNearbyHotels(latitude, longitude, searchRadius, searchRadiusUnit, null, callback);
+        getNearbyHotels(latitude, longitude, searchRadius, searchRadiusUnit, null, null, null, null, callback);
 
     }
 
     public void getNearbyHotels(double latitude, double longitude, Integer searchRadius,
-                                String searchRadiusUnit, String sort, EANCallback<HotelListResponse> callback) {
+                                String searchRadiusUnit, HotelListOptions.HotelSortOption sortOption, EANCallback<HotelListResponse> callback) {
+        getNearbyHotels(latitude, longitude, searchRadius, searchRadiusUnit, null, null, null, sortOption, callback);
+
+    }
+
+    public void getNearbyHotels(double latitude, double longitude, Integer searchRadius,
+                                String searchRadiusUnit, HotelListOptions.HotelCategory[] categories, Double minRating, Double maxRating, HotelListOptions.HotelSortOption sort, EANCallback<HotelListResponse> callback) {
         String sig = getSig();
-        String sessionId = Dao.getInstance().readEanSession();
-        eanApi.getNearbyHotels(sessionId, IP, CID, MINOR_REV, API_KEY, sig, API_EXPERIENCE, USER_AGENT,
-                String.valueOf(latitude), String.valueOf(longitude), searchRadius,
-                searchRadiusUnit, sort, callback);
+        String categoryFilter = null;
+        if(categories!=null) {
+            for(int i=0; i<categories.length; i++) {
+                categoryFilter = ""+categories[i].getValue();
+                if(i!=categories.length-1)
+                    categoryFilter+=",";
+            }
+        }
+        eanApi.getNearbyHotels(CID, MINOR_REV, API_KEY, sig,
+                String.valueOf(latitude), String.valueOf(longitude),
+                searchRadius, searchRadiusUnit, categoryFilter, minRating, maxRating, sort.getValue(), callback);
     }
 
     private String getSig() {
-        return Utils.md5(API_KEY+SHARED_SECRET+System.currentTimeMillis());
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("MD5");
+            long timeInSeconds = (System.currentTimeMillis() / 1000);
+            String input = API_KEY + SHARED_SECRET + timeInSeconds;
+            md.update(input.getBytes());
+            return String.format("%032x", new BigInteger(1, md.digest()));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
-
 }
