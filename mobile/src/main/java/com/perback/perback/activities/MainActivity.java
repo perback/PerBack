@@ -3,14 +3,19 @@ package com.perback.perback.activities;
 import com.perback.perback.R;
 import com.perback.perback.apis.ean.EANCallback;
 import com.perback.perback.apis.ean.HotelListResponse;
+import com.perback.perback.apis.places.BasePlacesResponse;
+import com.perback.perback.apis.places.PlacesResponse;
 import com.perback.perback.dao.Dao;
 import com.perback.perback.holders.TripPoint;
 import com.perback.perback.utils.RetrofitUtils;
 import com.perback.perback.x_base.BaseActivity;
 
+import java.util.ArrayList;
+
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
 public class MainActivity extends BaseActivity {
 
@@ -24,9 +29,27 @@ public class MainActivity extends BaseActivity {
         super.setData();
 //        TripTestActivity.launch(this);
 //        finish();
-        testHotelList();
+//        testHotelList();
+        testPlacesApi();
+    }
 
+    private void testPlacesApi() {
+        RetrofitUtils.getPlacesApi().testCall(new Callback<BasePlacesResponse<PlacesResponse>>() {
+            @Override
+            public void success(BasePlacesResponse<PlacesResponse> placesResponseBasePlacesResponse, Response response) {
+                if(placesResponseBasePlacesResponse.isSucces()) {
+                    ArrayList<PlacesResponse> placesResponse = placesResponseBasePlacesResponse.getResults();
+                    showMessage("Found "+placesResponse.size()+" places!", null);
+                } else {
+                    showMessage("Error", null);
+                }
+            }
 
+            @Override
+            public void failure(RetrofitError error) {
+                showMessage("Error: "+error.getMessage(), null);
+            }
+        });
     }
 
     private void testHotelList() {

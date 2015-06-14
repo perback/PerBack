@@ -32,19 +32,9 @@ public class SplashActivity extends BaseActivitySplash {
     @Override
     protected ArrayList<Runnable> getOperations() {
         ArrayList<Runnable> operations = new ArrayList<>();
-        operations.add(getTestOperation());
         operations.add(getIpCheckOperation());
 //        operations.add(getEanPingOperation());
         return operations;
-    }
-
-    private Runnable getTestOperation() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                operationDone();
-            }
-        };
     }
 
     private Runnable getIpCheckOperation() {

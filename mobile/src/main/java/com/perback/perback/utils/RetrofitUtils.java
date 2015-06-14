@@ -2,6 +2,7 @@ package com.perback.perback.utils;
 
 import android.content.Context;
 
+import com.google.android.gms.analytics.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.perback.perback.apis.ean.EANApi;
@@ -10,17 +11,30 @@ import com.perback.perback.apis.ean.EANDeserializer;
 import com.perback.perback.apis.ean.HotelListResponse;
 import com.perback.perback.apis.ean.PingResponse;
 import com.perback.perback.apis.ip.IpifyApi;
+import com.perback.perback.apis.places.PlacesApi;
+import com.perback.perback.apis.places.PlacesApiWrapper;
 
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 
 public class RetrofitUtils {
 
-
+    public static final String PLACES_URL = "https://maps.googleapis.com/maps/api/place";
     public static final String EAN_URL = "http://api.ean.com/ean-services/rs/hotel/v3";
     public static final String IPIFY_URL = "https://api.ipify.org";
 
     private static RestAdapter eanAdapter;
+    private static RestAdapter placesAdapter;
+
+    private static RestAdapter getPlacesAdapter() {
+        if(placesAdapter == null ) {
+            placesAdapter = new RestAdapter.Builder()
+                    .setEndpoint(PLACES_URL)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .build();
+        }
+        return placesAdapter;
+    }
 
     private static RestAdapter getEanAdapter() {
         if(eanAdapter==null) {
@@ -35,6 +49,10 @@ public class RetrofitUtils {
                     .build();
         }
         return eanAdapter;
+    }
+
+    public static PlacesApiWrapper getPlacesApi() {
+        return new PlacesApiWrapper(getPlacesAdapter().create(PlacesApi.class));
     }
 
     public static IpifyApi getIpifyApi() {

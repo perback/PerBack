@@ -66,8 +66,8 @@ public class HotelListOptions {
         ACCESSIBLE_BATHROOM(131072),
         ROLL_IN_SHOWER(262144),
         HANDICAPPED_PARKING(524288),
-        IN_ROOM_ACCESSIBILLITY(1048576),
-        ACCESSIBILLITY_EQUIPMENT_FOR_DEAF(2097152),
+        IN_ROOM_ACCESSIBILITY(1048576),
+        ACCESSIBILITY_EQUIPMENT_FOR_DEAF(2097152),
         BRAILLE_OR_RAISED_SIGNAGE(4194304),
         FREE_AIRPORT_SHUTTLE(8388608),
         INDOOR_POOL(16777216),
@@ -91,10 +91,14 @@ public class HotelListOptions {
         for(HotelSummary hotelSummary : hotels) {
             long amenityMask = hotelSummary.getAmenityMask();
             boolean hasAllAmenities = true;
-            for (HotelAmenity amenity : amenities) {
-                if (!hasAmenity(amenityMask, amenity))
-                    hasAllAmenities = false;
+            if(amenities.length>0) {
+                long filterMask = amenities[0].getValue();
+                for (HotelAmenity amenity : amenities) {
+                    filterMask = filterMask | amenity.getValue();
+                }
+                hasAllAmenities = (amenityMask & filterMask) == filterMask;
             }
+
             if(hasAllAmenities)
                 result.add(hotelSummary);
         }

@@ -1,0 +1,25 @@
+package com.perback.perback.apis.places;
+
+import com.perback.perback.x_base.BaseSerializable;
+
+public class Location extends BaseSerializable {
+
+    protected double lat;
+    protected double lng;
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+}
