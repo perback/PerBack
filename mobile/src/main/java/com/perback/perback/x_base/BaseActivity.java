@@ -25,6 +25,7 @@ import com.perback.perback.activities.MyTripsActivity;
 import com.perback.perback.activities.RegisterActivity;
 import com.perback.perback.activities.SettingsActivity;
 import com.perback.perback.activities.StartTripActivity;
+import com.perback.perback.activities.TripProgressActivity;
 
 public abstract class BaseActivity extends ActionBarActivity {
     protected FragmentManager fragmentManager;
@@ -104,6 +105,8 @@ public abstract class BaseActivity extends ActionBarActivity {
                 getSupportActionBar().setTitle(getResources().getString(R.string.title_my_trips_activity));
             else if (activity.getClass().getSimpleName().equals(HealthStatusActivity.class.getSimpleName()))
                 getSupportActionBar().setTitle(getResources().getString(R.string.title_health_status_activity));
+            else if (activity.getClass().getSimpleName().equals(TripProgressActivity.class.getSimpleName()))
+                getSupportActionBar().setTitle(getResources().getString(R.string.title_trip_progress_activity));
             else
                 getSupportActionBar().setTitle("Perback");
         }

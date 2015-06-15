@@ -8,7 +8,7 @@
     <string name="title_my_trips_activity">My trips</string>
     <string name="title_map_activity">Map</string>
     <string name="title_start_trip_activity">Start trip</string>
-    <string name="title_settings_activity">Sttings</string>
+    <string name="title_settings_activity">Settings</string>
     <string name="title_trip_progress_activity">Trip progress</string>
 
     <!-- Backup data -->
