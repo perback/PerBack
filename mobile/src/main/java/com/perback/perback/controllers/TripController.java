@@ -34,6 +34,7 @@ public class TripController {
     private BroadcastReceiver locationBroadcastReceiver;
     private Random r;
     private TripPoint lastLocation;
+    private TripPointAddedListener listener;
 
     private TripController(final Context context) {
         this.context = context;
@@ -56,19 +57,37 @@ public class TripController {
             public void onReceive(Context context, Intent intent) {
                 Location location = intent.getParcelableExtra(LOCATION);
                 String msg = "";
-                if(location!=null) {
-                    msg+=location.getLatitude();
-                    msg+=" ";
-                    msg+=location.getLongitude();
-                    TripPoint tripPoint = new TripPoint(location.getLatitude(), location.getLongitude());
-                    lastLocation = tripPoint;
-                    trip.addTripPoint(tripPoint);
+                if (location != null) {
+                    msg += location.getLatitude();
+                    msg += " ";
+                    msg += location.getLongitude();
+
+                    if(lastLocation!=null ) {
+                        float[] result = new float[1];
+                        Location.distanceBetween(lastLocation.getLat(), lastLocation.getLng(), location.getLatitude(), location.getLongitude(), result);
+                        if (result[0] > 50f) {
+                            addTripPoint(location);
+                        } else {
+//                            Log.d("Debug", "Location almost the same, diff: "+result[0]);
+                        }
+                    } else {
+                        addTripPoint(location);
+                    }
                 } else {
-                    msg+="null";
+                    msg += "null";
                 }
-                Log.d("Debug", "Location received: " + msg);
+//                Log.d("Debug", "Location received: " + msg);
             }
         };
+    }
+
+    private void addTripPoint(Location location) {
+        TripPoint tripPoint = new TripPoint(location.getLatitude(), location.getLongitude());
+        lastLocation = tripPoint;
+        trip.addTripPoint(tripPoint);
+        if (listener != null)
+            listener.onTripPointAdded(tripPoint);
+        Log.d("Debug", "Trip point added");
     }
 
     public static void init(Context context) {
@@ -89,12 +108,20 @@ public class TripController {
         return getCheckpoints(trip);
     }
 
+    public void unregisterListener() {
+        listener = null;
+    }
+
+    public void registerListener(TripPointAddedListener listener) {
+        this.listener = listener;
+    }
+
     public ArrayList<TripPoint> getCheckpoints(Trip trip) {
         ArrayList<TripPoint> checkpoints = new ArrayList<>();
-        if(isMonitoring()) {
+        if (isMonitoring()) {
             ArrayList<TripPoint> tripPoints = getTrip().getTripPoints();
-            for(int i=0; i<tripPoints.size(); i++) {
-                if(tripPoints.get(i).isCheckpoint())
+            for (int i = 0; i < tripPoints.size(); i++) {
+                if (tripPoints.get(i).isCheckpoint())
                     checkpoints.add(tripPoints.get(i));
             }
         }
@@ -119,9 +146,23 @@ public class TripController {
         context.unregisterReceiver(locationBroadcastReceiver);
     }
 
-//    public double getDistanceLeft() {
-//
-//    }
+    public float getTotalDistance() {
+        float[] totalDistance = new float[1];
+        Location.distanceBetween(trip.getStartLocationLat(), trip.getStartLocationLng(), trip.getEndLocationLat(), trip.getEndLocationLng(), totalDistance);
+        return totalDistance[0];
+    }
+
+    public float getDistanceTraveled() {
+        float[] traveledDistance = new float[1];
+        Location.distanceBetween(trip.getStartLocationLat(), trip.getStartLocationLng(), lastLocation.getLat(), lastLocation.getLng(), traveledDistance);
+        return traveledDistance[0];
+    }
+
+    public float getDistanceLeft() {
+        float totalDistance = getTotalDistance();
+        float distanceTraveled = getDistanceTraveled();
+        return totalDistance - distanceTraveled;
+    }
 
     public TripPoint getLastLocation() {
         return lastLocation;

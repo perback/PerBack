@@ -38,7 +38,7 @@
 
     <!-- Start Trip -->
     <string name="trip_name">Trip name</string>
-    <string name="start_location">Start location</string>
+    <string name="start_location">Destination</string>
     <string name="end_location">End location</string>
     <string name="start_trip">Start trip</string>
 

@@ -14,8 +14,17 @@ public class PlacesResponse extends BaseSerializable {
     protected String place_id;
     protected String reference;
     protected String scope;
+    protected String name;
     protected ArrayList<String> types;
     protected String vicinity;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Geometry getGeometry() {
         return geometry;
