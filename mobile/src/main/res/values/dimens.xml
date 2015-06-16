@@ -12,6 +12,7 @@
     <dimen name="button_height">60dp</dimen>
     <dimen name="edittext_height">60dp</dimen>
     <dimen name="textview_height">60dp</dimen>
+    <dimen name="right_drawer_group_height">45dp</dimen>
 
     <!-- General margins -->
     <dimen name="activity_margin">16dp</dimen>

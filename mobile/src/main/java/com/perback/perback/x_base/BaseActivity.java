@@ -142,7 +142,6 @@ public abstract class BaseActivity extends ActionBarActivity {
                                 case R.id.item_my_trips:
                                     intent = new Intent(BaseActivity.this, MyTripsActivity.class);
                                     startActivity(intent);
-
                                     drawerLayout.closeDrawer(GravityCompat.START);
                                     return true;
                                 case R.id.item_health_status:

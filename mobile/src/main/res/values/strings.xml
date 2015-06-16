@@ -52,6 +52,7 @@
     <string name="privacy">Privacy</string>
     <string name="account">Account</string>
     <string name="log_in">Log in</string>
+    <string name="log_out">Log out</string>
 
     <!-- Dialogs -->
     <string name="cancel">Cancel</string>
@@ -64,5 +65,12 @@
     <string name="calories">Calories</string>
     <string name="goal">Goal: <b>10000</b> steps</string>
     <string name="title_activity_maps">Map</string>
+
+    <!-- TODO -->
+    <string-array name="navigation_drawer_items_array">
+        <item>Create</item>
+        <item>Read</item>
+        <item>Help</item>
+    </string-array>
 
 </resources>

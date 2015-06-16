@@ -59,7 +59,6 @@ public class MainActivity extends BaseActivity {
         ivPerback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "Perback pressed", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(i);
             }
@@ -68,7 +67,8 @@ public class MainActivity extends BaseActivity {
         btnSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "Button Skip pressed", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(MainActivity.this, MapActivity.class);
+                startActivity(i);
             }
         });
 
