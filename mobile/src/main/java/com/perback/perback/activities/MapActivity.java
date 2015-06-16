@@ -1,24 +1,41 @@
 package com.perback.perback.activities;
 
 import android.content.Intent;
+import android.location.Location;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.perback.perback.R;
 import com.perback.perback.adapters.ExpandableListAdapter;
+import com.perback.perback.apis.places.BaseResponse;
+import com.perback.perback.apis.places.OpeningHours;
+import com.perback.perback.apis.places.PlacesResponse;
+import com.perback.perback.utils.RetrofitUtils;
 import com.perback.perback.x_base.BaseActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MapActivity extends BaseActivity {
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
+public class MapActivity extends BaseActivity implements OnMapReadyCallback {
 
     private FloatingActionButton fabCheckIn;
     private DrawerLayout drawerLayout;
@@ -29,8 +46,10 @@ public class MapActivity extends BaseActivity {
 
     private ExpandableListAdapter listAdapter;
     private ExpandableListView expListView;
-    ArrayList<String> listDataHeader;
-    HashMap<String, List<String>> listDataChild;
+    protected ArrayList<String> listDataHeader;
+    protected HashMap<String, List<String>> listDataChild;
+    protected GoogleMap map;
+    protected boolean cameraSet = false;
 
     @Override
     protected int getLayoutResId() {
@@ -57,6 +76,25 @@ public class MapActivity extends BaseActivity {
         prepareListData();
         listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
         expListView.setAdapter(listAdapter);
+        MapFragment mapFragment = MapFragment.newInstance();
+        getFragmentManager().beginTransaction().replace(R.id.map, mapFragment, "Map Activity").commit();
+        mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        map.setMyLocationEnabled(true);
+        map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+            @Override
+            public void onMyLocationChange(Location location) {
+                if (!cameraSet) {
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15);
+                    map.animateCamera(cameraUpdate);
+                    cameraSet = true;
+                }
+            }
+        });
     }
 
     @Override
@@ -66,15 +104,60 @@ public class MapActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(MapActivity.this, "Fab button", Toast.LENGTH_SHORT).show();
-                if(slideState){
+                if (slideState) {
                     drawerLayoutRight.closeDrawer(Gravity.RIGHT);
                     slideState = false;
-                }else{
+                } else {
                     drawerLayoutRight.openDrawer(Gravity.RIGHT);
                     slideState = true;
                 }
+                searchByFilters(); // todo remove this
             }
         });
+    }
+
+    private void searchByFilters() {
+        // accomodation -> ean api, otherwise -> places api
+        map.clear();
+        ArrayList<String> types = new ArrayList<>();
+        HashMap<Integer, boolean[]> childCheckStates = listAdapter.getmChildCheckStates();
+        for (int i = 1; i < listAdapter.getGroupCount(); i++) {
+            boolean[] checkedArray = childCheckStates.get(i);
+            if(checkedArray!=null) {
+                for (int j = 0; j < checkedArray.length; j++) {
+                    if (checkedArray[j])
+                        types.add((String) listAdapter.getChild(i, j));
+                }
+            }
+        }
+        Log.d("Debug", "Types count: " + types.size());
+        RetrofitUtils.getPlacesApi().nearbySearch(null, types, new Callback<BaseResponse<PlacesResponse>>() {
+            @Override
+            public void success(BaseResponse<PlacesResponse> placesResponseBaseResponse, Response response) {
+                ArrayList<PlacesResponse> results = placesResponseBaseResponse.getResults();
+                MarkerOptions markerOptions;
+                for (PlacesResponse result : results) {
+                    markerOptions = new MarkerOptions();
+                    markerOptions.position(new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()));
+                    markerOptions.title(result.getName());
+                    String weekdayText = "Opening hours:";
+                    OpeningHours openingHours = result.getOpening_hours();
+                    if(openingHours!=null && openingHours.getWeekday_text()!=null) {
+                        for (String s : openingHours.getWeekday_text()) {
+                            weekdayText += "\n" + s;
+                        }
+//                        markerOptions.snippet(weekdayText);
+                    }
+                    map.addMarker(markerOptions);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.d("Debug", "Filter request failire: " + error.getMessage());
+            }
+        });
+
     }
 
     private void prepareListData() {
@@ -133,16 +216,18 @@ public class MapActivity extends BaseActivity {
         List<String> pointsOfInterest = new ArrayList<String>();
         pointsOfInterest.add("Cemetery");
         pointsOfInterest.add("Churches");
-        pointsOfInterest.add("City Hall");
-        pointsOfInterest.add("Mosque");
-        pointsOfInterest.add("Synagogue");
-        pointsOfInterest.add("University");
+        pointsOfInterest.add("City Halls");
+        pointsOfInterest.add("Mosques");
+        pointsOfInterest.add("Synagogues");
+        pointsOfInterest.add("Universities");
+        pointsOfInterest.add("Schools");
+        pointsOfInterest.add("Libraries");
 
         List<String> services = new ArrayList<String>();
         services.add("Airports");
         services.add("ATMs");
         services.add("Banks");
-        services.add("Car Dalers");
+        services.add("Car Dealers");
         services.add("Car Rental");
         services.add("Car Repair");
         services.add("Car Wash");
@@ -194,5 +279,6 @@ public class MapActivity extends BaseActivity {
         listDataChild.put(listDataHeader.get(9), sports);
         listDataChild.put(listDataHeader.get(10), transport);
     }
+
 
 }

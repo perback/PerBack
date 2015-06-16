@@ -149,6 +149,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
+    public HashMap<Integer, boolean[]> getmChildCheckStates() {
+        return mChildCheckStates;
+    }
+
+    public void setmChildCheckStates(HashMap<Integer, boolean[]> mChildCheckStates) {
+        this.mChildCheckStates = mChildCheckStates;
+    }
+
     @Override
     public int getChildrenCount(int groupPosition) {
         return mListDataChild.get(mListDataGroup.get(groupPosition)).size();

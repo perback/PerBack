@@ -3,6 +3,8 @@ package com.perback.perback.apis.places;
 import com.perback.perback.dao.Dao;
 import com.perback.perback.holders.TripPoint;
 
+import java.util.ArrayList;
+
 import retrofit.Callback;
 
 public class PlacesApiWrapper {
@@ -23,13 +25,26 @@ public class PlacesApiWrapper {
         nearbySearch(null, null, callback);
     }
 
-    public void nearbySearch(String name, String types, Callback<BaseResponse<PlacesResponse>> callback) {
+    public void nearbySearch(String name, ArrayList<String> types, Callback<BaseResponse<PlacesResponse>> callback) {
         TripPoint locationPoint = Dao.getInstance().readLocation();
         String location = "" + locationPoint.getLat() + "," + locationPoint.getLng();
         Integer radius = Dao.getInstance().readPlacesRadius();
         if (radius == null)
             radius = 500;
-        placesApi.nearbySearch(API_KEY, location, radius, name, types, callback);
+        placesApi.nearbySearch(API_KEY, location, radius, name, getTypesStr(types), callback);
+    }
+
+    public String getTypesStr(ArrayList<String> input) {
+        String types = null;
+        if(input!=null && input.size()>0) {
+            types = "";
+            for(int i=0; i<input.size(); i++) {
+                if(i!=0)
+                    types+="|";
+                types+=PlacesTypes.getId(input.get(i));
+            }
+        }
+        return types;
     }
 
 }
