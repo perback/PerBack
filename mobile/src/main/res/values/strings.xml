@@ -42,6 +42,11 @@
     <string name="end_location">End location</string>
     <string name="start_trip">Start trip</string>
 
+    <!-- Trip progress -->
+    <string name="percentage_achieved">%1$s achieved\n so far</string>
+    <string name="kilometers_left">%1$s kilometers\n left</string>
+    <string name="hours_walking">%1$s %2$s of\n walking</string>
+
     <!-- Settings -->
     <string name="location_settings">Location settings</string>
     <string name="update_distance">Update distance</string>

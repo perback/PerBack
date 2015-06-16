@@ -9,6 +9,7 @@ public interface DirectionsApi {
     @GET("/json")
     void getDirections(@Query("key") String apiKey,
                        @Query("origin") String origin, @Query("destination") String destination,
+                       @Query("waypoints") String waypoints,
                        Callback<DirectionsResponse> callback);
 
 }

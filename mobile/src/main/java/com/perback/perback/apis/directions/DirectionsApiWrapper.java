@@ -1,5 +1,11 @@
 package com.perback.perback.apis.directions;
 
+import android.util.Log;
+
+import com.perback.perback.holders.TripPoint;
+
+import java.util.ArrayList;
+
 import retrofit.Callback;
 
 public class DirectionsApiWrapper {
@@ -13,10 +19,30 @@ public class DirectionsApiWrapper {
     }
 
     public void getDirections(String origin, String destination, Callback<DirectionsResponse> callback) {
-        directionsApi.getDirections(API_KEY, origin, destination, callback);
+        directionsApi.getDirections(API_KEY, origin, destination, null, callback);
     }
 
+    public void getDirections(String origin, String destination, ArrayList<TripPoint> waypoints, Callback<DirectionsResponse> callback) {
+        String waypointsStr = null;
+        if (waypoints != null) {
+            ArrayList<TripPoint> waypoints8 = getIntermediate8Points(waypoints);
+            waypointsStr = "";
+            TripPoint tp;
+            for (int i = 0; i < waypoints8.size(); i++) {
+                tp = waypoints8.get(i);
+                if (i != 0)
+                    waypointsStr += "|";
+                waypointsStr += "via:" + tp.getLat() + "," + tp.getLng();
+            }
+        }
+        directionsApi.getDirections(API_KEY, origin, destination, waypointsStr, callback);
+    }
 
+    private ArrayList<TripPoint> getIntermediate8Points(ArrayList<TripPoint> waypoints) {
+        ArrayList<TripPoint> intermediate = new ArrayList<>();
+        intermediate.addAll(waypoints); // todo change this
+        return intermediate;
+    }
 
 
 }

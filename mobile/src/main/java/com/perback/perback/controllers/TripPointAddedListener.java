@@ -4,6 +4,6 @@ import com.perback.perback.holders.TripPoint;
 
 public interface TripPointAddedListener {
 
-    void onTripPointAdded(TripPoint tripPoint);
+    void onNewTripPoint(TripPoint tripPoint);
 
 }

@@ -24,6 +24,7 @@ public class TripController {
     public static final String LOCATION = "TripController.LOCATION_PARCEL";
 
     private static final long DEFAULT_UPDATE_INTERVAL = 3000;
+    private static final float DEFAULT_UPDATE_DISTANCE = 50f;
 
     private Context context;
     private Trip trip;
@@ -35,6 +36,8 @@ public class TripController {
     private Random r;
     private TripPoint lastLocation;
     private TripPointAddedListener listener;
+    private long apiTotalDistance = -1;
+    private long apiProgressDistance = -1;
 
     private TripController(final Context context) {
         this.context = context;
@@ -65,7 +68,7 @@ public class TripController {
                     if(lastLocation!=null ) {
                         float[] result = new float[1];
                         Location.distanceBetween(lastLocation.getLat(), lastLocation.getLng(), location.getLatitude(), location.getLongitude(), result);
-                        if (result[0] > 50f) {
+                        if (result[0] > DEFAULT_UPDATE_DISTANCE) {
                             addTripPoint(location);
                         } else {
 //                            Log.d("Debug", "Location almost the same, diff: "+result[0]);
@@ -81,12 +84,40 @@ public class TripController {
         };
     }
 
+    public double getProgress() {
+        long totalDistance, progressDistance;
+        if(apiTotalDistance!=-1 && apiProgressDistance!=-1) {
+            totalDistance = apiTotalDistance;
+            progressDistance = apiProgressDistance;
+        } else {
+            totalDistance = (long)getTotalDistance();
+            progressDistance = (long) getDistanceTraveled();
+        }
+        return (double)(progressDistance*100)/totalDistance;
+    }
+
+    public long getApiTotalDistance() {
+        return apiTotalDistance;
+    }
+
+    public void setApiTotalDistance(long apiTotalDistance) {
+        this.apiTotalDistance = apiTotalDistance;
+    }
+
+    public long getApiProgressDistance() {
+        return apiProgressDistance;
+    }
+
+    public void setApiProgressDistance(long apiProgressDistance) {
+        this.apiProgressDistance = apiProgressDistance;
+    }
+
     private void addTripPoint(Location location) {
         TripPoint tripPoint = new TripPoint(location.getLatitude(), location.getLongitude());
         lastLocation = tripPoint;
-        trip.addTripPoint(tripPoint);
         if (listener != null)
-            listener.onTripPointAdded(tripPoint);
+            listener.onNewTripPoint(tripPoint);
+        trip.addTripPoint(tripPoint);
         Log.d("Debug", "Trip point added");
     }
 
@@ -161,7 +192,15 @@ public class TripController {
     public float getDistanceLeft() {
         float totalDistance = getTotalDistance();
         float distanceTraveled = getDistanceTraveled();
+        if(apiTotalDistance!=-1)
+            totalDistance = apiTotalDistance;
+        if(apiProgressDistance!=-1)
+            distanceTraveled = apiProgressDistance;
         return totalDistance - distanceTraveled;
+    }
+
+    public long getElapsedTime() {
+        return System.currentTimeMillis() - trip.getStartTime();
     }
 
     public TripPoint getLastLocation() {

@@ -136,9 +136,13 @@ public class Trip extends BaseSerializable {
         trip.setStartLocationLng(27.5753785);
 
         //41.005963,28.975868 istanbul
-        trip.setEndLocationLabel("Istanbul");
+        trip.setEndLocationLabel("Tot iasi"); // 47.161740, 27.595103
         trip.setEndLocationLat(41.005963);
         trip.setEndLocationLng(28.975868);
+
+        trip.addTripPoint(new TripPoint(47.173265, 27.573484));
+        trip.addTripPoint(new TripPoint(47.170216, 27.576070));
+        trip.addTripPoint(new TripPoint(47.165446, 27.590447));
 
         return trip;
     }
