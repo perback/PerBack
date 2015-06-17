@@ -159,6 +159,8 @@ public abstract class BaseActivity extends ActionBarActivity {
                 menuItem.setTitle(getString(R.string.item_trip_progress));
             }
 
+            // c
+
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
