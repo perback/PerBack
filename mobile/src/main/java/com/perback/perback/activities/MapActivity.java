@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -35,8 +36,10 @@ import com.perback.perback.R;
 import com.perback.perback.adapters.ExpandableListAdapter;
 import com.perback.perback.apis.places.BaseResponse;
 import com.perback.perback.apis.places.OpeningHours;
+import com.perback.perback.apis.places.PlaceDetailsResponse;
 import com.perback.perback.apis.places.PlacesResponse;
 import com.perback.perback.utils.AnimationEndListener;
+import com.perback.perback.utils.PicassoUtils;
 import com.perback.perback.utils.RetrofitUtils;
 import com.perback.perback.x_base.BaseActivity;
 
@@ -66,6 +69,8 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
     protected RelativeLayout rl_scene;
     protected CardView cv_marker_details;
     protected int markerDetailsHeight;
+    protected HashMap<Marker, Object> markerTags;
+    protected boolean markerDetailsVisible = false;
 
     @Override
     protected int getLayoutResId() {
@@ -74,6 +79,12 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
 
     public static void launch(BaseActivity activity) {
         activity.startActivity(new Intent(activity, MapActivity.class));
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        markerTags = new HashMap<>();
     }
 
     @Override
@@ -99,10 +110,11 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         markerDetailsHeight = (int) MapActivity.this.getResources().getDimension(R.dimen.marker_details_height);
+        markerDetailsHeight += MapActivity.this.getResources().getDimension(R.dimen.activity_margin) + 2;
         views.get(R.id.layout_marker_details).animate().translationYBy(markerDetailsHeight).setListener(new AnimationEndListener() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                views.get(R.id.cv_marker_details).setVisibility(View.VISIBLE);
+                views.get(R.id.layout_marker_details).setVisibility(View.VISIBLE);
             }
         });
     }
@@ -125,9 +137,45 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                views.get(R.id.fab_check_in).animate().translationYBy(-markerDetailsHeight);
-                views.get(R.id.layout_marker_details).animate().translationYBy(-markerDetailsHeight);
-                return true;
+                PlacesResponse placeData = (PlacesResponse) markerTags.get(marker);
+                if (placeData != null) {
+                    setMarkerData(placeData);
+                    return true;
+                } else {
+                    return false;
+                }
+
+            }
+        });
+    }
+
+    protected void setMarkerData(final PlacesResponse markerData) {
+        RetrofitUtils.getPlacesApi().getPlaceDetails(markerData.getPlace_id(), new Callback<BaseResponse<PlaceDetailsResponse>>() {
+            @Override
+            public void success(BaseResponse<PlaceDetailsResponse> placeDetailsResponseBaseResponse, Response response) {
+                if (placeDetailsResponseBaseResponse.isSucces()) {
+                    PlaceDetailsResponse placeDetailsResponse = placeDetailsResponseBaseResponse.getResult();
+                    views.getTextView(R.id.tv_place_title).setText(placeDetailsResponse.getName());
+                    views.getTextView(R.id.tv_address).setText(placeDetailsResponse.getFormatted_address());
+                    ((RatingBar)views.get(R.id.rb_rating)).setNumStars(5);
+                    ((RatingBar)views.get(R.id.rb_rating)).setRating((float) placeDetailsResponse.getRating());
+                    PicassoUtils.loadPlacePhoto(markerData.getReference(), views.getImageView(R.id.iv_place_photo));
+                    views.get(R.id.layout_marker_details).setTag(placeDetailsResponse);
+                    views.get(R.id.layout_marker_details).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PlaceDetailsActivity.launch(MapActivity.this, (PlaceDetailsResponse) v.getTag());
+                        }
+                    });
+                    views.get(R.id.fab_check_in).animate().translationYBy(-markerDetailsHeight);
+                    views.get(R.id.layout_marker_details).animate().translationYBy(-markerDetailsHeight);
+                    markerDetailsVisible = true;
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e("Debug", "Places details failure");
             }
         });
     }
@@ -183,7 +231,7 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
                         }
 //                        markerOptions.snippet(weekdayText);
                     }
-                    map.addMarker(markerOptions);
+                    markerTags.put(map.addMarker(markerOptions), result);
                 }
             }
 
@@ -193,6 +241,15 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (markerDetailsVisible) {
+            views.get(R.id.fab_check_in).animate().translationYBy(markerDetailsHeight);
+            views.get(R.id.layout_marker_details).animate().translationYBy(markerDetailsHeight);
+        } else
+            super.onBackPressed();
     }
 
     private void prepareListData() {

@@ -46,20 +46,11 @@
                     android:layout_marginTop="4dp" />
 
                 <TextView
-                    android:id="@+id/tv_phone"
+                    android:id="@+id/tv_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/rb_rating"
-                    android:layout_marginTop="4dp"
-                    android:text="teeeest" />
-
-                <TextView
-                    android:id="@+id/tv_website"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/tv_phone"
-                    android:layout_marginTop="4dp"
-                    android:text="teeeest" />
+                    android:layout_marginTop="4dp" />
 
                 <ImageView
                     android:layout_width="20dp"

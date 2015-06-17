@@ -44,8 +44,8 @@ public class PicassoUtils {
         picasso.load(resId).fit().into(target);
     }
 
-    public static void loadPlacePhoto(String photoReference) {
-        picasso.load(PLACE_PHOTOS_URL+photoReference);
+    public static void loadPlacePhoto(String photoReference, ImageView target) {
+        picasso.load(PLACE_PHOTOS_URL+photoReference).fit().centerInside().into(target);
     }
 
 }

@@ -20,6 +20,15 @@ public class PlaceDetailsResponse extends BaseSerializable {
     protected String url;
     protected String vicinity;
     protected String website;
+    protected double rating;
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
 
     public ArrayList<AddressComponent> getAddress_components() {
         return address_components;
