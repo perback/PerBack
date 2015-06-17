@@ -3,6 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/marker_details_height"
     android:layout_margin="@dimen/activity_margin"
+    android:id="@+id/cv_marker_details"
+    android:visibility="invisible"
     android:orientation="vertical">
 
     <RelativeLayout

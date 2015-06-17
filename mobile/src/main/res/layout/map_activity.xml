@@ -19,6 +19,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
+                android:id="@+id/rl_scene"
                 android:layout_height="match_parent">
 
                 <FrameLayout
@@ -30,12 +31,20 @@
                     android:id="@+id/fab_check_in"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
+                    android:visibility="visible"
+                    android:layout_alignParentBottom="true"
                     android:layout_marginBottom="@dimen/spacing_20"
                     android:layout_marginRight="@dimen/spacing_20"
                     android:src="@drawable/ic_checked_64"
                     app:fabSize="normal" />
+
+                <include layout="@layout/marker_details"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/marker_details_height"
+                    android:layout_alignParentBottom="true"
+                    android:id="@+id/layout_marker_details"
+                    android:layout_margin="@dimen/activity_margin" />
             </RelativeLayout>
 
             <ExpandableListView
@@ -48,6 +57,8 @@
                 android:divider="@color/material_blue_grey_800"
                 android:dividerHeight="2dp"/>
         </android.support.v4.widget.DrawerLayout>
+
+
 
         <include layout="@layout/toolbar" />
 
