@@ -1,6 +1,7 @@
 package com.perback.perback.x_base;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,13 +10,22 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.perback.perback.R;
 import com.perback.perback.activities.HealthStatusActivity;
@@ -34,6 +44,10 @@ public abstract class BaseActivity extends ActionBarActivity {
     private Activity activity;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+    //Search in toolbar
+    private MenuItem searchAction;
+    private boolean isSearchOpened = false;
+    private AutoCompleteTextView etSeach;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,9 +80,20 @@ public abstract class BaseActivity extends ActionBarActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        searchAction = menu.findItem(R.id.action_search);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.general_menu, menu);
+        if (activity.getClass().getSimpleName().equals(MapActivity.class.getSimpleName()))
+            inflater.inflate(R.menu.map_menu, menu);
+        else if (activity.getClass().getSimpleName().equals(TripProgressActivity.class.getSimpleName()))
+            inflater.inflate(R.menu.trip_progress_menu, menu);
+        else inflater.inflate(R.menu.general_menu, menu);
+        ;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -76,10 +101,13 @@ public abstract class BaseActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_phone:
+                Toast.makeText(activity, "SOS", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_end_flag:
+                Toast.makeText(activity, "END TRIP", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_search:
+                handleToolbarSearch();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -107,6 +135,8 @@ public abstract class BaseActivity extends ActionBarActivity {
                 getSupportActionBar().setTitle(getResources().getString(R.string.title_health_status_activity));
             else if (activity.getClass().getSimpleName().equals(TripProgressActivity.class.getSimpleName()))
                 getSupportActionBar().setTitle(getResources().getString(R.string.title_trip_progress_activity));
+            else if (activity.getClass().getSimpleName().equals(MapActivity.class.getSimpleName()))
+                getSupportActionBar().setTitle(getResources().getString(R.string.title_map_activity));
             else
                 getSupportActionBar().setTitle("Perback");
         }
@@ -171,5 +201,55 @@ public abstract class BaseActivity extends ActionBarActivity {
                 .setPositiveButton("OK", clickListener)
                 .setCancelable(clickListener == null)
                 .show();
+    }
+
+    private void handleToolbarSearch() {
+        ActionBar action = getSupportActionBar(); //get the actionbar
+
+        if (isSearchOpened) { //test if the search is open
+
+            action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
+            action.setDisplayShowTitleEnabled(true); //show the title in the action bar
+
+            //hides the keyboard
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(etSeach.getWindowToken(), 0);
+
+            //add the search icon in the action bar
+            searchAction.setIcon(getResources().getDrawable(R.drawable.ic_search));
+
+            isSearchOpened = false;
+        } else { //open the search entry
+
+            action.setDisplayShowCustomEnabled(true); //enable it to display a
+            // custom view in the action bar.
+            action.setCustomView(R.layout.search_toolbar_layout);//add the custom view
+            action.setDisplayShowTitleEnabled(false); //hide the title
+
+            etSeach = (AutoCompleteTextView) action.getCustomView().findViewById(R.id.et_search); //the text editor
+
+            //this is a listener to do a search when the user clicks on search button
+            etSeach.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                       Toast.makeText(activity, etSeach.getText().toString(), Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+
+            etSeach.requestFocus();
+
+            //open the keyboard focused in the etSearch
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(etSeach, InputMethodManager.SHOW_IMPLICIT);
+
+            //add the close icon
+            searchAction.setIcon(getResources().getDrawable(R.drawable.ic_search));
+
+            isSearchOpened = true;
+        }
     }
 }
