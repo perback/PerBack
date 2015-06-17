@@ -8,7 +8,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -101,6 +103,23 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
     @Override
     protected void setData() {
         super.setData();
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayoutRight, (Toolbar) views.get(R.id.toolbar), R.string.open_drawer, R.string.close_drawer) {
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+
+
+        }; // Drawer Toggle Object Made
+        drawerLayoutRight.setDrawerListener(actionBarDrawerToggle); // Drawer Listener set to the Drawer toggle
+        actionBarDrawerToggle.syncState();
 
         prepareListData();
         listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
@@ -248,6 +267,7 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
         if (markerDetailsVisible) {
             views.get(R.id.fab_check_in).animate().translationYBy(markerDetailsHeight);
             views.get(R.id.layout_marker_details).animate().translationYBy(markerDetailsHeight);
+            markerDetailsVisible = false;
         } else
             super.onBackPressed();
     }

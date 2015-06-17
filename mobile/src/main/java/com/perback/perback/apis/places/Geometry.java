@@ -1,6 +1,8 @@
 package com.perback.perback.apis.places;
 
-public class Geometry {
+import com.perback.perback.x_base.BaseSerializable;
+
+public class Geometry extends BaseSerializable {
 
     protected Location location;
 

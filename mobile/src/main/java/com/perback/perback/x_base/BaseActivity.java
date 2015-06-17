@@ -12,6 +12,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -44,6 +45,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     private Toolbar toolbar;
     private Activity activity;
     private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
     //Search in toolbar
     private MenuItem searchAction;
@@ -57,9 +59,14 @@ public abstract class BaseActivity extends ActionBarActivity {
             setContentView(getLayoutResId());
 
         activity = this;
-        initToolbar();
-        setUpNavDrawer();
+
         linkUI();
+
+        if (views.get(R.id.collapsing_toolbar) == null) {
+            initToolbar();
+            setUpNavDrawer();
+        }
+
         init();
         setData();
         setActions();
@@ -153,54 +160,74 @@ public abstract class BaseActivity extends ActionBarActivity {
             }
 
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    drawerLayout.openDrawer(GravityCompat.START);
 
-                    navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-                        @Override
-                        public boolean onNavigationItemSelected(MenuItem menuItem) {
-                            Intent intent;
-                            menuItem.setChecked(true);
-                            switch (menuItem.getItemId()) {
-                                case R.id.item_map:
-                                    intent = new Intent(BaseActivity.this, MapActivity.class);
-                                    startActivity(intent);
-                                    drawerLayout.closeDrawer(GravityCompat.START);
-                                    return true;
-                                case R.id.item_start_trip:
-                                    if (TripController.getInstance().isMonitoring())
-                                        intent = new Intent(BaseActivity.this, TripProgressActivity.class);
-                                    else
-                                        intent = new Intent(BaseActivity.this, StartTripActivity.class);
-                                    startActivity(intent);
-                                    drawerLayout.closeDrawer(GravityCompat.START);
-                                    return true;
-                                case R.id.item_my_trips:
-                                    intent = new Intent(BaseActivity.this, MyTripsActivity.class);
-                                    startActivity(intent);
-                                    drawerLayout.closeDrawer(GravityCompat.START);
-                                    return true;
-                                case R.id.item_health_status:
-                                    intent = new Intent(BaseActivity.this, HealthStatusActivity.class);
-                                    startActivity(intent);
-                                    drawerLayout.closeDrawer(GravityCompat.START);
-                                    return true;
-                                case R.id.item_settings:
-                                    intent = new Intent(BaseActivity.this, SettingsActivity.class);
-                                    startActivity(intent);
-                                    drawerLayout.closeDrawer(GravityCompat.START);
-                                    return true;
-                                default:
-                                    return true;
-                            }
-                        }
-                    });
+
+            actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer) {
+
+                @Override
+                public void onDrawerOpened(View drawerView) {
+                    super.onDrawerOpened(drawerView);
                 }
-            });
-        }
+
+                @Override
+                public void onDrawerClosed(View drawerView) {
+                    super.onDrawerClosed(drawerView);
+                }
+
+
+            }; // Drawer Toggle Object Made
+            drawerLayout.setDrawerListener(actionBarDrawerToggle); // Drawer Listener set to the Drawer toggle
+            actionBarDrawerToggle.syncState();               // Finally we set the drawer toggle sync State
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(GravityCompat.START);
+
+                navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        Intent intent;
+                        menuItem.setChecked(true);
+                        switch (menuItem.getItemId()) {
+                            case R.id.item_map:
+                                intent = new Intent(BaseActivity.this, MapActivity.class);
+                                startActivity(intent);
+                                drawerLayout.closeDrawer(GravityCompat.START);
+                                return true;
+                            case R.id.item_start_trip:
+                                if (TripController.getInstance().isMonitoring())
+                                    intent = new Intent(BaseActivity.this, TripProgressActivity.class);
+                                else
+                                    intent = new Intent(BaseActivity.this, StartTripActivity.class);
+                                startActivity(intent);
+                                drawerLayout.closeDrawer(GravityCompat.START);
+                                return true;
+                            case R.id.item_my_trips:
+                                intent = new Intent(BaseActivity.this, MyTripsActivity.class);
+                                startActivity(intent);
+                                drawerLayout.closeDrawer(GravityCompat.START);
+                                return true;
+                            case R.id.item_health_status:
+                                intent = new Intent(BaseActivity.this, HealthStatusActivity.class);
+                                startActivity(intent);
+                                drawerLayout.closeDrawer(GravityCompat.START);
+                                return true;
+                            case R.id.item_settings:
+                                intent = new Intent(BaseActivity.this, SettingsActivity.class);
+                                startActivity(intent);
+                                drawerLayout.closeDrawer(GravityCompat.START);
+                                return true;
+                            default:
+                                return true;
+                        }
+                    }
+                });
+            }
+        });
     }
+
+}
 
 
     public void showMessage(String message, DialogInterface.OnClickListener clickListener) {
@@ -241,7 +268,7 @@ public abstract class BaseActivity extends ActionBarActivity {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                       Toast.makeText(activity, etSeach.getText().toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, etSeach.getText().toString(), Toast.LENGTH_SHORT).show();
                         return true;
                     }
                     return false;
