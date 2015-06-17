@@ -40,9 +40,13 @@ public class DirectionsApiWrapper {
 
     private ArrayList<TripPoint> getIntermediate8Points(ArrayList<TripPoint> waypoints) {
         ArrayList<TripPoint> intermediate = new ArrayList<>();
-        intermediate.addAll(waypoints); // todo change this
+        int step = waypoints.size()/8+1;
+        for (int i = 0; i < waypoints.size(); i+=step) {
+            if(i+step>=waypoints.size())
+                intermediate.add(waypoints.get(waypoints.size()-1));
+            else
+                intermediate.add(waypoints.get(i));
+        }
         return intermediate;
     }
-
-
 }

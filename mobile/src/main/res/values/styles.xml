@@ -9,4 +9,8 @@
     <style name="EditTextCustom" parent="android:Widget.EditText">
     </style>
 
+    <style name="SmallRatingBar" parent="Widget.AppCompat.RatingBar">
+        <item name="android:ratingBarStyle">@android:style/Widget.DeviceDefault.RatingBar.Small</item>
+    </style>
+
 </resources>

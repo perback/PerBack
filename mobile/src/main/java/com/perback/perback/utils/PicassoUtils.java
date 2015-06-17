@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.perback.perback.apis.places.PlacesApiWrapper;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -12,6 +13,7 @@ import java.io.File;
 public class PicassoUtils {
 
     private static Picasso picasso;
+    public static final String PLACE_PHOTOS_URL = "https://maps.googleapis.com/maps/api/place/photo?key="+ PlacesApiWrapper.API_KEY+"&photoreference=";
 
     public static void init(Context context) {
         picasso = new Picasso.Builder(context)
@@ -40,6 +42,10 @@ public class PicassoUtils {
 
     public static void load(int resId, ImageView target) {
         picasso.load(resId).fit().into(target);
+    }
+
+    public static void loadPlacePhoto(String photoReference) {
+        picasso.load(PLACE_PHOTOS_URL+photoReference);
     }
 
 }

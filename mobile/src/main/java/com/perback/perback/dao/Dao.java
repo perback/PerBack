@@ -124,10 +124,10 @@ public class Dao extends BaseDao {
         write(StorageMethod.InternalFiles, distanceProximityPosition, DISTANCE_PROXIMITY);
     }
 
-    public int readDistanceProximityPosition() {
-        if (read(StorageMethod.InternalFiles, DISTANCE_PROXIMITY) == null)
-            return 0;
-        return (int) read(StorageMethod.InternalFiles, DISTANCE_PROXIMITY);
+    public Integer readDistanceProximityPosition() {
+//        if (read(StorageMethod.InternalFiles, DISTANCE_PROXIMITY) == null)
+//            return 0;
+        return (Integer) read(StorageMethod.InternalFiles, DISTANCE_PROXIMITY);
     }
 
     public void writeNoOfSteps(int noOfSteps) {

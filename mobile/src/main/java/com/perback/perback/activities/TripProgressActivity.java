@@ -216,9 +216,11 @@ public class TripProgressActivity extends BaseActivity implements OnMapReadyCall
 
     @Override
     public void onNewTripPoint(TripPoint tripPoint) {
-        List<LatLng> points = progressPath.first.getPoints();
-        points.add(new LatLng(47.202459, 27.646709));
-        progressPath.first.setPoints(points);
+        if(progressPath!=null) {
+            List<LatLng> points = progressPath.first.getPoints();
+            points.add(new LatLng(tripPoint.getLat(), tripPoint.getLng()));
+            progressPath.first.setPoints(points);
+        }
     }
 
     private interface DrawPathCallback {

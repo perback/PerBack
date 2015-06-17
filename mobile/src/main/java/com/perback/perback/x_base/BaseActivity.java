@@ -26,6 +26,7 @@ import com.perback.perback.activities.RegisterActivity;
 import com.perback.perback.activities.SettingsActivity;
 import com.perback.perback.activities.StartTripActivity;
 import com.perback.perback.activities.TripProgressActivity;
+import com.perback.perback.controllers.TripController;
 
 public abstract class BaseActivity extends ActionBarActivity {
     protected FragmentManager fragmentManager;
@@ -116,6 +117,10 @@ public abstract class BaseActivity extends ActionBarActivity {
         if (toolbar != null) {
             drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
             navigationView = (NavigationView) findViewById(R.id.navigation_view);
+            if (TripController.getInstance().isMonitoring()) {
+                MenuItem menuItem = navigationView.getMenu().getItem(1);
+                menuItem.setTitle(getString(R.string.item_trip_progress));
+            }
 
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -135,7 +140,10 @@ public abstract class BaseActivity extends ActionBarActivity {
                                     drawerLayout.closeDrawer(GravityCompat.START);
                                     return true;
                                 case R.id.item_start_trip:
-                                    intent = new Intent(BaseActivity.this, StartTripActivity.class);
+                                    if (TripController.getInstance().isMonitoring())
+                                        intent = new Intent(BaseActivity.this, TripProgressActivity.class);
+                                    else
+                                        intent = new Intent(BaseActivity.this, StartTripActivity.class);
                                     startActivity(intent);
                                     drawerLayout.closeDrawer(GravityCompat.START);
                                     return true;

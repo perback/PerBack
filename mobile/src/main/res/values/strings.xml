@@ -19,6 +19,7 @@
     <string name="backpaker_name">Backpaker\'s name</string>
     <string name="item_map">Map</string>
     <string name="item_start_trip">Start trip</string>
+    <string name="item_trip_progress">Trip progress</string>
     <string name="item_my_trips">My trips</string>
     <string name="item_health_status">Health status</string>
     <string name="item_settings">Settings</string>

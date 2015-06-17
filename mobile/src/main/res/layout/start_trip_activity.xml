@@ -65,9 +65,10 @@
             android:layout_height="match_parent">
 
             <ProgressBar
-                style="@android:style/Widget.ProgressBar"
+                style="@style/Base.Widget.AppCompat.ProgressBar"
                 android:layout_width="wrap_content"
                 android:layout_gravity="center"
+                android:indeterminate="true"
                 android:layout_height="wrap_content" />
 
         </FrameLayout>

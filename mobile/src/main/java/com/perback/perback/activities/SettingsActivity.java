@@ -83,7 +83,7 @@ public class SettingsActivity extends BaseActivity {
                         .itemsCallbackSingleChoice(selectedPosition, new MaterialDialog.ListCallbackSingleChoice() {
                             @Override
                             public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                dao.writeDistanceProximityPosition(which);
+                                dao.writeDistanceProximityPosition(which*1000);
                                 return true;
                             }
                         })

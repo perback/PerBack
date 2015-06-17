@@ -36,6 +36,7 @@
         <activity android:name=".activities.SettingsActivity" />
         <activity android:name=".activities.HealthStatusActivity" />
         <activity android:name=".activities.TripProgressActivity" />
+        <activity android:name=".activities.PlaceDetailsActivity"/>
 
         <service
             android:name=".services.LocationService"

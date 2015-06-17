@@ -34,7 +34,7 @@ public class RetrofitUtils {
         if(directionsAdapter == null ) {
             directionsAdapter = new RestAdapter.Builder()
                     .setEndpoint(DIRECTIONS_URL)
-                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .setLogLevel(RestAdapter.LogLevel.NONE)
                     .build();
         }
         return directionsAdapter;
@@ -44,7 +44,7 @@ public class RetrofitUtils {
         if(placesAdapter == null ) {
             placesAdapter = new RestAdapter.Builder()
                     .setEndpoint(PLACES_URL)
-                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .setLogLevel(RestAdapter.LogLevel.NONE)
                     .build();
         }
         return placesAdapter;
@@ -77,7 +77,7 @@ public class RetrofitUtils {
     public static IpifyApi getIpifyApi() {
         return new RestAdapter.Builder()
                 .setEndpoint(IPIFY_URL)
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(RestAdapter.LogLevel.NONE)
                 .build().create(IpifyApi.class);
     }
 

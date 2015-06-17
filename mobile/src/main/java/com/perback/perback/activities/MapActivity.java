@@ -18,6 +18,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.perback.perback.R;
 import com.perback.perback.adapters.ExpandableListAdapter;
@@ -93,6 +94,13 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
                     map.animateCamera(cameraUpdate);
                     cameraSet = true;
                 }
+            }
+        });
+
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                return false;
             }
         });
     }

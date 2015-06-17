@@ -185,7 +185,15 @@ public class TripController {
 
     public float getDistanceTraveled() {
         float[] traveledDistance = new float[1];
-        Location.distanceBetween(trip.getStartLocationLat(), trip.getStartLocationLng(), lastLocation.getLat(), lastLocation.getLng(), traveledDistance);
+        if(lastLocation!=null)
+            Location.distanceBetween(trip.getStartLocationLat(), trip.getStartLocationLng(), lastLocation.getLat(), lastLocation.getLng(), traveledDistance);
+        else {
+            if(trip.getTripPoints().size()>0) {
+                Location.distanceBetween(trip.getStartLocationLat(), trip.getStartLocationLng(), trip.getTripPoints().get(trip.getTripPoints().size()-1).getLat(), trip.getTripPoints().get(trip.getTripPoints().size()-1).getLng(), traveledDistance);
+            } else {
+                return 0;
+            }
+        }
         return traveledDistance[0];
     }
 
