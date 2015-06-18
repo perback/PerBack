@@ -34,7 +34,7 @@ public class RetrofitUtils {
         if(directionsAdapter == null ) {
             directionsAdapter = new RestAdapter.Builder()
                     .setEndpoint(DIRECTIONS_URL)
-                    .setLogLevel(RestAdapter.LogLevel.NONE)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
                     .build();
         }
         return directionsAdapter;
@@ -44,7 +44,7 @@ public class RetrofitUtils {
         if(placesAdapter == null ) {
             placesAdapter = new RestAdapter.Builder()
                     .setEndpoint(PLACES_URL)
-                    .setLogLevel(RestAdapter.LogLevel.NONE)
+                    .setLogLevel(RestAdapter.LogLevel.BASIC)
                     .build();
         }
         return placesAdapter;

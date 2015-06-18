@@ -22,6 +22,26 @@ public class Trip extends BaseSerializable {
     protected long startTime;
     protected long endTime;
 
+    protected String snapshotPath;
+
+    protected long apiTotalDistance;
+
+    public long getApiTotalDistance() {
+        return apiTotalDistance;
+    }
+
+    public void setApiTotalDistance(long apiTotalDistance) {
+        this.apiTotalDistance = apiTotalDistance;
+    }
+
+    public String getSnapshotPath() {
+        return snapshotPath;
+    }
+
+    public void setSnapshotPath(String snapshotPath) {
+        this.snapshotPath = snapshotPath;
+    }
+
     public Trip(){
         tripPoints=new ArrayList<>();
     }

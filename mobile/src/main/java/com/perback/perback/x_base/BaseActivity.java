@@ -84,9 +84,6 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
             setContentView(getLayoutResId());
 
         activity = this;
-
-       /* initToolbar();
-        setUpNavDrawer();*/
         linkUI();
         if (views.get(R.id.collapsing_toolbar) == null) {
             initToolbar();
@@ -118,6 +115,8 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
         return super.onPrepareOptionsMenu(menu);
     }
 
+    public Menu menu;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -126,6 +125,8 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
         else if (activity.getClass().getSimpleName().equals(TripProgressActivity.class.getSimpleName()))
             inflater.inflate(R.menu.trip_progress_menu, menu);
         else inflater.inflate(R.menu.general_menu, menu);
+
+        this.menu = menu;
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -147,9 +148,8 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 Dao.getInstance().writeIsTripStarted(false);
-                                Intent intent = new Intent(BaseActivity.this, MyTripsActivity.class);
-                                startActivity(intent);
-                                activity.finish();
+                                TripController.getInstance().endTrip();
+//                                activity.finish();
                             }
 
                             @Override
@@ -240,7 +240,7 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
                                     drawerLayout.closeDrawer(GravityCompat.START);
                                     return true;
                                 case R.id.item_start_trip:
-                                    if (Dao.getInstance().isTripStarted()) {
+                                    if (TripController.getInstance().isMonitoring()) {
                                         intent = new Intent(BaseActivity.this, TripProgressActivity.class);
                                         startActivity(intent);
                                     } else {

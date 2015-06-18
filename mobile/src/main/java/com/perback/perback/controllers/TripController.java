@@ -35,7 +35,7 @@ public class TripController {
     private BroadcastReceiver locationBroadcastReceiver;
     private Random r;
     private TripPoint lastLocation;
-    private TripPointAddedListener listener;
+    private TripControllerListener listener;
     private long apiTotalDistance = -1;
     private long apiProgressDistance = -1;
 
@@ -101,6 +101,7 @@ public class TripController {
     }
 
     public void setApiTotalDistance(long apiTotalDistance) {
+        trip.setApiTotalDistance(apiTotalDistance);
         this.apiTotalDistance = apiTotalDistance;
     }
 
@@ -143,7 +144,7 @@ public class TripController {
         listener = null;
     }
 
-    public void registerListener(TripPointAddedListener listener) {
+    public void registerListener(TripControllerListener listener) {
         this.listener = listener;
     }
 
@@ -169,12 +170,20 @@ public class TripController {
         context.registerReceiver(locationBroadcastReceiver, intentFilter);
     }
 
-    public void endTrip() {
+    public void endTrip(String snapshot) {
         monitoring = false;
         trip.setEndTime(System.currentTimeMillis());
+        if(snapshot!=null)
+            trip.setSnapshotPath(snapshot);
         Dao.getInstance().saveTrip(trip);
+        if(listener!=null)
+            listener.onTripEnd(trip);
         handler.removeCallbacks(updateLocationRunnable);
         context.unregisterReceiver(locationBroadcastReceiver);
+    }
+
+    public void endTrip() {
+        endTrip(null);
     }
 
     public float getTotalDistance() {

@@ -322,7 +322,6 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
         rlRemoveMarkers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                map.clear();
                 new MaterialDialog.Builder(MapActivity.this)
                         .title("Remove markers")
                         .content("Are you sure that you want to remove all markers from map?")
@@ -331,6 +330,7 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
+                                map.clear();
                                 rlRemoveMarkers.setVisibility(View.INVISIBLE);
                             }
 
@@ -353,8 +353,14 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
             boolean[] checkedArray = childCheckStates.get(i);
             if (checkedArray != null) {
                 for (int j = 0; j < checkedArray.length; j++) {
-                    if (checkedArray[j])
-                        types.add((String) listAdapter.getChild(i, j));
+                    if (checkedArray[j]) {
+                        try {
+                            types.add((String) listAdapter.getChild(i, j));
+                        } catch (Exception e) {
+                            Log.e("Debug", "Exception: "+e.getMessage());
+                        }
+
+                    }
                 }
             }
         }
@@ -381,17 +387,17 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
                         if (result.getTypes().get(i).equals("airport") || result.getTypes().get(i).equals("atm") || result.getTypes().get(i).equals("bank") || result.getTypes().get(i).equals("car_dealer") || result.getTypes().get(i).equals("car_rental") || result.getTypes().get(i).equals("car_repair") || result.getTypes().get(i).equals("car_wash") || result.getTypes().get(i).equals("dentist") || result.getTypes().get(i).equals("doctor") || result.getTypes().get(i).equals("fire_station") || result.getTypes().get(i).equals("gas_station") || result.getTypes().get(i).equals("hospital") || result.getTypes().get(i).equals("insurance_agency") || result.getTypes().get(i).equals("parking") || result.getTypes().get(i).equals("pharmacy") || result.getTypes().get(i).equals("police") || result.getTypes().get(i).equals("post_office") || result.getTypes().get(i).equals("travel_agency")) {
                             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                         }
-                        if(result.getTypes().get(i).equals("campground") || result.getTypes().get(i).equals("rv_park")){
+                        if (result.getTypes().get(i).equals("campground") || result.getTypes().get(i).equals("rv_park")) {
                             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                         }
-                        if(result.getTypes().get(i).equals("casino") || result.getTypes().get(i).equals("night_club") || result.getTypes().get(i).equals("movie_theater")){
+                        if (result.getTypes().get(i).equals("casino") || result.getTypes().get(i).equals("night_club") || result.getTypes().get(i).equals("movie_theater")) {
                             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                         }
                         if (result.getTypes().get(i).equals("bakery") || result.getTypes().get(i).equals("bar") || result.getTypes().get(i).equals("cafe") ||
                                 result.getTypes().get(i).equals("restaurant") || result.getTypes().get(i).equals("meal_delivery") || result.getTypes().get(i).equals("meal_takeaway")) {
                             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
                         }
-                        if(result.getTypes().get(i).equals("park")){
+                        if (result.getTypes().get(i).equals("park")) {
                             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
                         }
                         if (result.getTypes().get(i).equals("cemetery") || result.getTypes().get(i).equals("church") || result.getTypes().get(i).equals("city_hall") ||
@@ -407,7 +413,7 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
                             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
                         }
 
-                        if(result.getTypes().get(i).equals("bowling_alley") || result.getTypes().get(i).equals("stadium") ){
+                        if (result.getTypes().get(i).equals("bowling_alley") || result.getTypes().get(i).equals("stadium")) {
                             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
                         }
 
