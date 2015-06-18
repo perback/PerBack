@@ -2,24 +2,34 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/right_drawer_group_height"
+    android:background="#ffffff"
     android:orientation="horizontal"
-    android:padding="8dp"
-    android:background="#ffffff">
+    android:padding="3dp">
 
 
     <TextView
         android:id="@+id/tv_header"
         android:layout_width="0dp"
-        android:layout_weight="1"
         android:layout_height="@dimen/right_drawer_group_height"
+        android:layout_weight="1"
         android:gravity="center_vertical"
         android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:textSize="17dp"
-        android:textColor="#000000" />
+        android:textColor="#000000"
+        android:textSize="17dp" />
 
-    <CheckBox
-        android:id="@+id/chk_group"
-        android:focusable="false"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/ll_chk_group"
+        android:layout_width="51dp"
+        android:layout_height="51dp"
+        android:gravity="center">
+
+        <CheckBox
+            android:id="@+id/chk_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:gravity="center"
+            android:focusable="false"
+            android:button="@drawable/filter_group_chk_selector"/>
+    </LinearLayout>
 </LinearLayout>

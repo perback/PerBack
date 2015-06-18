@@ -14,8 +14,25 @@
     <color name="orange_path">@color/app_orange</color>
 
     <color name="toolbar_color">@color/app_dark_blue</color>
-    <color name="drawer_header_bg_color">@color/app_orange</color>
+    <color name="drawer_header_bg_color">@color/app_green</color>
     <color name="drawer_list_item_color">@color/app_dark_gray</color>
+
+    <!-- ExpandableListView colors -->
+    <color name="light_orange">#FD7F23</color>
+    <color name="dark_blue">#04395C</color>
+    <color name="light_blue">#1CADDA</color>
+    <color name="light_green">#73BE4B</color>
+    <color name="purple">#55255B</color>
+    <color name="turquoise">#1BAEA3</color>
+    <color name="orange">#ED4F2E</color>
+    <color name="green">#179D54</color>
+    <color name="yellow">#FDAE32</color>
+    <color name="blue">#0B56A3</color>
+    <color name="pink">#EE6F71</color>
+    <color name="dark_red">#B4222B</color>
+    <color name="other_green">#83C79D</color>
+
+    <color name="divider_light_grey">#F5F5F5</color>
 
 
 </resources>

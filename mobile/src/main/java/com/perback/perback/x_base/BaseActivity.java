@@ -80,9 +80,14 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
             setContentView(getLayoutResId());
 
         activity = this;
-        initToolbar();
-        setUpNavDrawer();
+
+       /* initToolbar();
+        setUpNavDrawer();*/
         linkUI();
+        if(views.get(R.id.collapsing_toolbar)==null) {
+            initToolbar();
+            setUpNavDrawer();
+        }
         init();
         setData();
         setActions();
@@ -251,21 +256,22 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
     }
 
     private void handleToolbarSearch() {
-        ActionBar action = getSupportActionBar(); //get the actionbar
+        final ActionBar action = getSupportActionBar(); //get the actionbar
 
         if (isSearchOpened) { //test if the search is open
 
-            action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
-            action.setDisplayShowTitleEnabled(true); //show the title in the action bar
+            /*action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
+            action.setDisplayShowTitleEnabled(true); //show the title in the action bar*/
 
             //hides the keyboard
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(etAutocompleteSeach.getWindowToken(), 0);
+            /*InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(etAutocompleteSeach.getWindowToken(), 0);*/
 
             //add the search icon in the action bar
-            searchAction.setIcon(getResources().getDrawable(R.drawable.ic_magnify_white_24dp));
+//            searchAction.setIcon(getResources().getDrawable(R.drawable.ic_magnify_white_24dp));
 
-            isSearchOpened = false;
+            etAutocompleteSeach.setText("");
+
         } else { //open the search entry
 
             action.setDisplayShowCustomEnabled(true); //enable it to display a
@@ -297,6 +303,13 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
                                 ((MapActivity) activity).addMarkerOnMap(address.getLatitude(), address.getLongitude(), searchedLocation);
                             }
                         }
+
+                        action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
+                        action.setDisplayShowTitleEnabled(true); //show the title in the action bar
+
+                        searchAction.setIcon(getResources().getDrawable(R.drawable.ic_magnify_white_24dp));
+                        isSearchOpened = false;
+
                         return true;
                     }
                     return false;
@@ -361,21 +374,6 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
             }
             // Get the Place object from the buffer.
             final Place place = places.get(0);
-
-            // Format details of the place for display and show it in a TextView.
-            /*mPlaceDetailsText.setText(formatPlaceDetails(getResources(), place.getName(),
-                    place.getId(), place.getAddress(), place.getPhoneNumber(),
-                    place.getWebsiteUri()));*/
-
-            // Display the third party attributions if set.
-            final CharSequence thirdPartyAttribution = places.getAttributions();
-            if (thirdPartyAttribution == null) {
-//                mPlaceDetailsAttribution.setVisibility(View.GONE);
-            } else {
-//                mPlaceDetailsAttribution.setVisibility(View.VISIBLE);
-//                mPlaceDetailsAttribution.setText(Html.fromHtml(thirdPartyAttribution.toString()));
-            }
-
 
             places.release();
         }

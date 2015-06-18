@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     // Hashmap for keeping track of our checkbox check states
     private HashMap<Integer, boolean[]> mChildCheckStates;
 
+    private HashMap<Integer, Boolean> mGroupCheckStates;
+
     // Our getChildView & getGroupView use the viewholder patter
     // Here are the viewholders defined, the inner classes are
     // at the bottom
@@ -65,6 +68,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         // Initialize our hashmap containing our check states here
         mChildCheckStates = new HashMap<Integer, boolean[]>();
+        mGroupCheckStates = new HashMap<Integer, Boolean>();
     }
 
     @Override
@@ -110,6 +114,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             groupViewHolder.mGroupCheckBox = (CheckBox) convertView
                     .findViewById(R.id.chk_group);
 
+            groupViewHolder.mGroupLinearLayout = (LinearLayout) convertView.findViewById(R.id.ll_chk_group);
+
             convertView.setTag(groupViewHolder);
         } else {
 
@@ -117,6 +123,45 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         groupViewHolder.mGroupText.setText(groupText);
+
+        groupViewHolder.mGroupCheckBox.setOnCheckedChangeListener(null);
+
+        if (mGroupCheckStates.containsKey(groupPosition)) {
+			/*
+			 * if the hashmap mChildCheckStates<Integer, Boolean[]> contains
+			 * the value of the parent view (group) of this child (aka, the key),
+			 * then retrive the boolean array getChecked[]
+			*/
+            boolean getChecked = mGroupCheckStates.get(groupPosition);
+
+            // set the check state of this position's checkbox based on the
+            // boolean value of getChecked[position]
+            groupViewHolder.mGroupCheckBox.setChecked(getChecked);
+
+            if(getChecked)
+                setColorToGroupCheckbox(groupPosition,  groupViewHolder.mGroupLinearLayout);
+            else
+                groupViewHolder.mGroupLinearLayout.setBackgroundColor(mContext.getResources().getColor(R.color.white));
+
+        } else {
+
+			/*
+			 * if the hashmap mChildCheckStates<Integer, Boolean[]> does not
+			 * contain the value of the parent view (group) of this child (aka, the key),
+			 * (aka, the key), then initialize getChecked[] as a new boolean array
+			 *  and set it's size to the total number of children associated with
+			 *  the parent group
+			*/
+            boolean getChecked = false;
+
+            // add getChecked[] to the mChildCheckStates hashmap using mGroupPosition as the key
+            mGroupCheckStates.put(groupPosition, getChecked);
+
+            // set the check state of this position's checkbox based on the
+            // boolean value of getChecked[position]
+            groupViewHolder.mGroupCheckBox.setChecked(false);
+        }
+
 
         groupViewHolder.mGroupCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -130,6 +175,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                         getChecked[i] = isChecked;
                         mChildCheckStates.put(groupPosition, getChecked);
                     }
+                    mGroupCheckStates.put(groupPosition,isChecked);
+
                     notifyDataSetChanged();
                     Toast.makeText(mContext, "group " + groupPosition, Toast.LENGTH_SHORT).show();
 
@@ -140,6 +187,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                         getChecked[i] = isChecked;
                         mChildCheckStates.put(groupPosition, getChecked);
                     }
+                    mGroupCheckStates.put(groupPosition,isChecked);
                     notifyDataSetChanged();
 
                 }
@@ -232,6 +280,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             // boolean value of getChecked[position]
             childViewHolder.mCheckBox.setChecked(getChecked[mChildPosition]);
 
+            if(getChecked[mChildPosition])
+                setDrawableToCheckboxButton(mGroupPosition, childViewHolder.mCheckBox);
+            else
+                childViewHolder.mCheckBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_light_grey_24dp));
+
         } else {
 
 			/*
@@ -249,6 +302,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             // set the check state of this position's checkbox based on the
             // boolean value of getChecked[position]
             childViewHolder.mCheckBox.setChecked(false);
+            childViewHolder.mCheckBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_light_grey_24dp));
+
         }
 
         childViewHolder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -262,12 +317,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                     getChecked[mChildPosition] = isChecked;
                     mChildCheckStates.put(mGroupPosition, getChecked);
                     Toast.makeText(mContext, "tem " + mChildPosition + " from group " + mGroupPosition, Toast.LENGTH_SHORT).show();
+                    setDrawableToCheckboxButton(mGroupPosition, childViewHolder.mCheckBox);
 
                 } else {
 
                     boolean getChecked[] = mChildCheckStates.get(mGroupPosition);
                     getChecked[mChildPosition] = isChecked;
                     mChildCheckStates.put(mGroupPosition, getChecked);
+                    childViewHolder.mCheckBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_light_grey_24dp));
                 }
             }
         });
@@ -285,10 +342,101 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return false;
     }
 
+    private void setColorToGroupCheckbox(int position, LinearLayout llChkGroup){
+        switch (position){
+            case 0:
+                llChkGroup.setBackgroundColor(mContext.getResources().getColor(R.color.light_orange));
+                break;
+            case 1:
+                llChkGroup.setBackgroundColor(mContext.getResources().getColor(R.color.dark_blue));
+                break;
+            case 2:
+                llChkGroup.setBackgroundColor(mContext.getResources().getColor(R.color.light_blue));
+                break;
+            case 3:
+                llChkGroup.setBackgroundColor(mContext.getResources().getColor(R.color.light_green));
+                break;
+            case 4:
+                llChkGroup.setBackgroundColor(mContext.getResources().getColor(R.color.purple));
+                break;
+            case 5:
+                llChkGroup.setBackgroundColor(mContext.getResources().getColor(R.color.turquoise));
+                break;
+            case 6:
+                llChkGroup.setBackgroundColor(mContext.getResources().getColor(R.color.orange));
+                break;
+            case 7:
+                llChkGroup.setBackgroundColor(mContext.getResources().getColor(R.color.green));
+                break;
+            case 8:
+                llChkGroup.setBackgroundColor(mContext.getResources().getColor(R.color.yellow));
+                break;
+            case 9:
+                llChkGroup.setBackgroundColor(mContext.getResources().getColor(R.color.blue));
+                break;
+            case 10:
+                llChkGroup.setBackgroundColor(mContext.getResources().getColor(R.color.pink));
+                break;
+            case 11:
+                llChkGroup.setBackgroundColor(mContext.getResources().getColor(R.color.dark_red));
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void setDrawableToCheckboxButton(int mGroupPosition, CheckBox checkBox){
+
+        switch (mGroupPosition){
+            case 0:
+                checkBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_orange_24dp));
+                break;
+            case 1:
+                checkBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_dark_blue_24dp));
+                break;
+            case 2:
+                checkBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_light_blue_24dp));
+                break;
+            case 3:
+                checkBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_light_green_24dp));
+                break;
+            case 4:
+                checkBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_purple_24dp));
+                break;
+            case 5:
+                checkBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_turquoise_24dp));
+                break;
+            case 6:
+                checkBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_light_orange_24dp));
+                break;
+            case 7:
+                checkBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_green_24dp));
+                break;
+            case 8:
+                checkBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_yellow_24dp));
+                break;
+            case 9:
+                checkBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_blue_24dp));
+                break;
+            case 10:
+                checkBox.setButtonDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_pink_24dp));
+                break;
+            default:
+                break;
+
+        }
+
+
+
+    }
+
+
     public final class GroupViewHolder {
 
         TextView mGroupText;
         CheckBox mGroupCheckBox;
+        LinearLayout mGroupLinearLayout;
     }
 
     public final class ChildViewHolder {

@@ -28,6 +28,7 @@ import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -79,6 +80,9 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
     protected HashMap<Marker, Object> markerTags;
     protected boolean markerDetailsVisible = false;
 
+    private RelativeLayout rlOpenFilterMenu;
+    private RelativeLayout rlRemoveMarkers;
+
 
     @Override
     protected int getLayoutResId() {
@@ -104,6 +108,8 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
         rl_scene = (RelativeLayout) views.get(R.id.rl_scene);
         expListView = (ExpandableListView) findViewById(R.id.lvExp);
         cv_marker_details = (CardView) views.get(R.id.cv_marker_details);
+        rlOpenFilterMenu = (RelativeLayout) views.get(R.id.rl_open_filter_menu);
+        rlRemoveMarkers = (RelativeLayout) views.get(R.id.rl_remove_markers);
     }
 
     @Override
@@ -162,7 +168,7 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                if(markerDetailsVisible)
+                if (markerDetailsVisible)
                     hideDetails();
             }
         });
@@ -172,7 +178,7 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
             public boolean onMarkerClick(Marker marker) {
                 final PlacesResponse placeData = (PlacesResponse) markerTags.get(marker);
                 if (placeData != null) {
-                    if(markerDetailsVisible)
+                    if (markerDetailsVisible)
                         hideDetails(new AnimationEndListener() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
@@ -273,7 +279,14 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
         fabCheckIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MapActivity.this, "Fab button", Toast.LENGTH_SHORT).show();
+
+                searchByFilters(); // todo remove this
+            }
+        });
+
+        rlOpenFilterMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 if (slideState) {
                     drawerLayoutRight.closeDrawer(Gravity.RIGHT);
                     slideState = false;
@@ -281,7 +294,52 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
                     drawerLayoutRight.openDrawer(Gravity.RIGHT);
                     slideState = true;
                 }
-                searchByFilters(); // todo remove this
+            }
+        });
+
+        drawerLayoutRight.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                slideState = true;
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                slideState = false;
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+
+        rlRemoveMarkers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                map.clear();
+                new MaterialDialog.Builder(MapActivity.this)
+                        .title("Remove markers")
+                        .content("Are you sure that you want to remove all markers from map?")
+                        .positiveText("Yes")
+                        .negativeText("Cancel")
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                rlRemoveMarkers.setVisibility(View.INVISIBLE);
+                            }
+
+                            @Override
+                            public void onNegative(MaterialDialog dialog) {
+                                super.onNegative(dialog);
+                            }
+                        })
+                        .show();
             }
         });
     }
@@ -291,7 +349,7 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
         map.clear();
         ArrayList<String> types = new ArrayList<>();
         HashMap<Integer, boolean[]> childCheckStates = listAdapter.getmChildCheckStates();
-        for (int i = 1; i < listAdapter.getGroupCount(); i++) {
+        for (int i = 1; i < listAdapter.getGroupCount()-1; i++) {
             boolean[] checkedArray = childCheckStates.get(i);
             if (checkedArray != null) {
                 for (int j = 0; j < checkedArray.length; j++) {
@@ -306,10 +364,59 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
             public void success(BaseResponse<PlacesResponse> placesResponseBaseResponse, Response response) {
                 ArrayList<PlacesResponse> results = placesResponseBaseResponse.getResults();
                 MarkerOptions markerOptions;
+
+                if (results.size() > 0) {
+                    rlRemoveMarkers.setVisibility(View.VISIBLE);
+                }
+
                 for (PlacesResponse result : results) {
                     markerOptions = new MarkerOptions();
                     markerOptions.position(new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()));
                     markerOptions.title(result.getName());
+
+                    for (int i = 0; i < result.getTypes().size(); i++) {
+                        if (result.getTypes().get(i).equals("amusement_park") || result.getTypes().get(i).equals("aquarium") || result.getTypes().get(i).equals("art_gallery") || result.getTypes().get(i).equals("museum") || result.getTypes().get(i).equals("zoo")) {
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                        }
+                        if (result.getTypes().get(i).equals("airport") || result.getTypes().get(i).equals("atm") || result.getTypes().get(i).equals("bank") || result.getTypes().get(i).equals("car_dealer") || result.getTypes().get(i).equals("car_rental") || result.getTypes().get(i).equals("car_repair") || result.getTypes().get(i).equals("car_wash") || result.getTypes().get(i).equals("dentist") || result.getTypes().get(i).equals("doctor") || result.getTypes().get(i).equals("fire_station") || result.getTypes().get(i).equals("gas_station") || result.getTypes().get(i).equals("hospital") || result.getTypes().get(i).equals("insurance_agency") || result.getTypes().get(i).equals("parking") || result.getTypes().get(i).equals("pharmacy") || result.getTypes().get(i).equals("police") || result.getTypes().get(i).equals("post_office") || result.getTypes().get(i).equals("travel_agency")) {
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                        }
+                        if(result.getTypes().get(i).equals("campground") || result.getTypes().get(i).equals("rv_park")){
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                        }
+                        if(result.getTypes().get(i).equals("casino") || result.getTypes().get(i).equals("night_club") || result.getTypes().get(i).equals("movie_theater")){
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                        }
+                        if (result.getTypes().get(i).equals("bakery") || result.getTypes().get(i).equals("bar") || result.getTypes().get(i).equals("cafe") ||
+                                result.getTypes().get(i).equals("restaurant") || result.getTypes().get(i).equals("meal_delivery") || result.getTypes().get(i).equals("meal_takeaway")) {
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+                        }
+                        if(result.getTypes().get(i).equals("park")){
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                        }
+                        if (result.getTypes().get(i).equals("cemetery") || result.getTypes().get(i).equals("church") || result.getTypes().get(i).equals("city_hall") ||
+                                result.getTypes().get(i).equals("mosque") || result.getTypes().get(i).equals("synagogue") || result.getTypes().get(i).equals("university")
+                                || result.getTypes().get(i).equals("school") || result.getTypes().get(i).equals("library")) {
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                        }
+                        if (result.getTypes().get(i).equals("book_store") || result.getTypes().get(i).equals("bicycle_store") || result.getTypes().get(i).equals("clothing_store") ||
+                                result.getTypes().get(i).equals("electronics_store") || result.getTypes().get(i).equals("grocery_or_supermarket") || result.getTypes().get(i).equals("jewelry_store")
+                                || result.getTypes().get(i).equals("furniture_store") || result.getTypes().get(i).equals("lawyer")
+                                || result.getTypes().get(i).equals("liquor_store") || result.getTypes().get(i).equals("shoe_store")
+                                || result.getTypes().get(i).equals("shopping_mall")) {
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+                        }
+
+                        if(result.getTypes().get(i).equals("bowling_alley") || result.getTypes().get(i).equals("stadium") ){
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                        }
+
+                        if (result.getTypes().get(i).equals("bus_station") || result.getTypes().get(i).equals("taxi_stand") ||
+                                result.getTypes().get(i).equals("subway_station") || result.getTypes().get(i).equals("train_station")) {
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        }
+                    }
+
                     String weekdayText = "Opening hours:";
                     OpeningHours openingHours = result.getOpening_hours();
                     if (openingHours != null && openingHours.getWeekday_text() != null) {
@@ -466,7 +573,7 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
         map.addMarker(markerOptions);
 
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude),15);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15);
         map.animateCamera(cameraUpdate);
 
     }

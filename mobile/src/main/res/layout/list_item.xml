@@ -17,6 +17,7 @@
     <CheckBox
         android:id="@+id/chk_item"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:button="@drawable/ic_check_light_grey_24dp"/>
 
 </LinearLayout>
