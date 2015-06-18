@@ -10,16 +10,25 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include layout="@layout/toolbar" />
+        <include layout="@layout/toolbar"
+            android:id="@+id/layout_toolbar"/>
 
-        <!--<android.support.v7.widget.RecyclerView
+        <ListView
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />-->
+            android:layout_below="@+id/layout_toolbar"
+            android:layout_marginRight="@dimen/card_margin"
+            android:layout_marginLeft="@dimen/card_margin"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="@dimen/card_margin"
+            android:id="@+id/lv_my_trips"
+            android:scrollbars="none"
+            android:layout_height="match_parent"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_add_trip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_marginBottom="@dimen/spacing_20"

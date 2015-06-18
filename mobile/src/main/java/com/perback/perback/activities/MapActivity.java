@@ -3,6 +3,7 @@ package com.perback.perback.activities;
 import android.animation.Animator;
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,6 +21,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.RatingBar;
@@ -41,6 +43,8 @@ import com.perback.perback.apis.places.BaseResponse;
 import com.perback.perback.apis.places.OpeningHours;
 import com.perback.perback.apis.places.PlaceDetailsResponse;
 import com.perback.perback.apis.places.PlacesResponse;
+import com.perback.perback.dao.Dao;
+import com.perback.perback.holders.TripPoint;
 import com.perback.perback.utils.AnimationEndListener;
 import com.perback.perback.utils.PicassoUtils;
 import com.perback.perback.utils.RetrofitUtils;
@@ -106,22 +110,22 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
     protected void setData() {
         super.setData();
 
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayoutRight, (Toolbar) views.get(R.id.toolbar), R.string.open_drawer, R.string.close_drawer) {
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-
-
-        }; // Drawer Toggle Object Made
-        drawerLayoutRight.setDrawerListener(actionBarDrawerToggle); // Drawer Listener set to the Drawer toggle
-        actionBarDrawerToggle.syncState();
+//        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayoutRight, (Toolbar) views.get(R.id.toolbar), R.string.open_drawer, R.string.close_drawer) {
+//
+//            @Override
+//            public void onDrawerOpened(View drawerView) {
+//                super.onDrawerOpened(drawerView);
+//            }
+//
+//            @Override
+//            public void onDrawerClosed(View drawerView) {
+//                super.onDrawerClosed(drawerView);
+//            }
+//
+//
+//        }; // Drawer Toggle Object Made
+//        drawerLayoutRight.setDrawerListener(actionBarDrawerToggle); // Drawer Listener set to the Drawer toggle
+//        actionBarDrawerToggle.syncState();
 
         prepareListData();
         listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
@@ -155,12 +159,29 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
             }
         });
 
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if(markerDetailsVisible)
+                    hideDetails();
+            }
+        });
+
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                PlacesResponse placeData = (PlacesResponse) markerTags.get(marker);
+                final PlacesResponse placeData = (PlacesResponse) markerTags.get(marker);
                 if (placeData != null) {
-                    setMarkerData(placeData);
+                    if(markerDetailsVisible)
+                        hideDetails(new AnimationEndListener() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                setMarkerData(placeData);
+                            }
+                        });
+                    else {
+                        setMarkerData(placeData);
+                    }
                     return true;
                 } else {
                     return false;
@@ -168,9 +189,39 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
 
             }
         });
+
+        map.getUiSettings().setMapToolbarEnabled(false);
+
+    }
+
+    public void hideDetails() {
+        hideDetails(null);
+    }
+
+    public void hideDetails(AnimationEndListener listener) {
+        views.get(R.id.fab_check_in).animate().translationYBy(markerDetailsHeight);
+        ViewPropertyAnimator vpa = views.get(R.id.layout_marker_details).animate().translationYBy(markerDetailsHeight);
+//        if(listener!=null) {
+//            vpa.setListener(listener);
+//        }
+        markerDetailsVisible = false;
+
+    }
+
+    public void showDetails() {
+        showDetails(null);
+    }
+
+    public void showDetails(AnimationEndListener listener) {
+        views.get(R.id.fab_check_in).animate().translationYBy(-markerDetailsHeight);
+        ViewPropertyAnimator vpa = views.get(R.id.layout_marker_details).animate().translationYBy(-markerDetailsHeight);
+//        if(listener!=null)
+//            vpa.setListener(listener);
+        markerDetailsVisible = true;
     }
 
     protected void setMarkerData(final PlacesResponse markerData) {
+
         RetrofitUtils.getPlacesApi().getPlaceDetails(markerData.getPlace_id(), new Callback<BaseResponse<PlaceDetailsResponse>>() {
             @Override
             public void success(BaseResponse<PlaceDetailsResponse> placeDetailsResponseBaseResponse, Response response) {
@@ -178,9 +229,13 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
                     PlaceDetailsResponse placeDetailsResponse = placeDetailsResponseBaseResponse.getResult();
                     views.getTextView(R.id.tv_place_title).setText(placeDetailsResponse.getName());
                     views.getTextView(R.id.tv_address).setText(placeDetailsResponse.getFormatted_address());
-                    ((RatingBar)views.get(R.id.rb_rating)).setNumStars(5);
-                    ((RatingBar)views.get(R.id.rb_rating)).setRating((float) placeDetailsResponse.getRating());
-                    PicassoUtils.loadPlacePhoto(markerData.getReference(), views.getImageView(R.id.iv_place_photo));
+                    ((RatingBar) views.get(R.id.rb_rating)).setNumStars(5);
+                    ((RatingBar) views.get(R.id.rb_rating)).setRating((float) placeDetailsResponse.getRating());
+                    if (markerData.getPhotos() != null && markerData.getPhotos().size() > 0)
+                        PicassoUtils.loadPlacePhoto(markerData.getPhotos().get(0).getPhoto_reference(), views.getImageView(R.id.iv_place_photo));
+                    else {
+                        PicassoUtils.loadPlacePhoto(null, views.getImageView(R.id.iv_place_photo));
+                    }
                     views.get(R.id.layout_marker_details).setTag(placeDetailsResponse);
                     views.get(R.id.layout_marker_details).setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -188,9 +243,20 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
                             PlaceDetailsActivity.launch(MapActivity.this, (PlaceDetailsResponse) v.getTag());
                         }
                     });
-                    views.get(R.id.fab_check_in).animate().translationYBy(-markerDetailsHeight);
-                    views.get(R.id.layout_marker_details).animate().translationYBy(-markerDetailsHeight);
-                    markerDetailsVisible = true;
+                    views.get(R.id.iv_directions).setTag(markerData);
+                    views.get(R.id.iv_directions).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PlacesResponse placesResponse = (PlacesResponse) v.getTag();
+                            TripPoint currentLocation = Dao.getInstance().readLocation();
+                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(
+                                    "http://maps.google.com/maps?saddr=" + currentLocation.getLat() + ", " + currentLocation.getLng()
+                                            + "&daddr=" + placesResponse.getGeometry().getLocation().getLat() + ", "
+                                            + placesResponse.getGeometry().getLocation().getLng()));
+                            startActivity(intent);
+                        }
+                    });
+                    showDetails();
                 }
             }
 
@@ -267,9 +333,7 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
     @Override
     public void onBackPressed() {
         if (markerDetailsVisible) {
-            views.get(R.id.fab_check_in).animate().translationYBy(markerDetailsHeight);
-            views.get(R.id.layout_marker_details).animate().translationYBy(markerDetailsHeight);
-            markerDetailsVisible = false;
+            hideDetails();
         } else
             super.onBackPressed();
     }

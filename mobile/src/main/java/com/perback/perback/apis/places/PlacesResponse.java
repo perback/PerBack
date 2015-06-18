@@ -12,11 +12,19 @@ public class PlacesResponse extends BaseSerializable {
     protected String id;
     protected OpeningHours opening_hours;
     protected String place_id;
-    protected String reference;
     protected String scope;
     protected String name;
     protected ArrayList<String> types;
     protected String vicinity;
+    protected ArrayList<Photo> photos;
+
+    public ArrayList<Photo> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(ArrayList<Photo> photos) {
+        this.photos = photos;
+    }
 
     public String getName() {
         return name;
@@ -64,14 +72,6 @@ public class PlacesResponse extends BaseSerializable {
 
     public void setPlace_id(String place_id) {
         this.place_id = place_id;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
     }
 
     public String getScope() {

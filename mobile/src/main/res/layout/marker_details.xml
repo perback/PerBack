@@ -27,21 +27,22 @@
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="3">
+                android:layout_weight="4">
 
                 <TextView
                     android:id="@+id/tv_place_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Place title"
+                    android:layout_marginRight="20dp"
                     android:textColor="@color/app_green"
-                    android:textSize="19sp" />
+                    android:textSize="16sp" />
 
                 <RatingBar
                     android:id="@+id/rb_rating"
                     style="@android:style/Widget.Holo.RatingBar.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:layout_below="@id/tv_place_title"
                     android:layout_marginTop="4dp" />
 
@@ -49,13 +50,13 @@
                     android:id="@+id/tv_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/rb_rating"
+                    android:layout_below="@+id/tv_place_title"
                     android:layout_marginTop="4dp" />
 
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:id="@+id/iv_checkin"
+                    android:id="@+id/iv_directions"
                     android:layout_alignParentRight="true"
                     android:src="@drawable/ic_login_fb" />
 

@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.perback.perback.x_base.BaseSerializable;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Trip extends BaseSerializable {
 
@@ -129,6 +130,27 @@ public class Trip extends BaseSerializable {
         else
             return System.currentTimeMillis() - startTime;
     }
+
+    public static ArrayList<Trip> getMyTripsMockup() {
+        ArrayList<Trip> myTrips = new ArrayList<>();
+        Trip trip;
+        Random r = new Random();
+        for(int i=0; i<10; i++) {
+            trip = new Trip();
+            trip.setTripName("Trip "+(i+1));
+            trip.setStartLocationLabel("Start location mockup " + (i + 1));
+            trip.setEndLocationLabel("End location mockup " + (i + 1));
+            trip.setStartLocationLat(r.nextInt());
+            trip.setStartLocationLng(r.nextInt());
+            trip.setEndLocationLat(r.nextInt());
+            trip.setEndLocationLng(r.nextInt());
+            trip.setStartTime(System.currentTimeMillis());
+            trip.setEndTime(r.nextLong());
+            myTrips.add(trip);
+        }
+        return myTrips;
+    }
+
 
     public static Trip getMockup() {
         Trip trip = new Trip();
