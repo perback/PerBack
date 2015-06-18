@@ -90,6 +90,7 @@ public class TripProgressActivity extends BaseActivity implements OnMapReadyCall
             startLocation = trip.getTripPoints().get(0);
         }
 
+
         LatLng startPoint = new LatLng(startLocation.getLat(), startLocation.getLng());
         LatLng endPoint = new LatLng(trip.getEndLocationLat(), trip.getEndLocationLng());
         drawPath(false, startPoint, endPoint, trip.getTripPoints(), getResources().getColor(R.color.blue_path), new DrawPathCallback() {

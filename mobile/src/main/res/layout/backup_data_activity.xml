@@ -72,6 +72,7 @@
         android:layout_margin="@dimen/activity_margin"
         android:text="@string/skip"
         android:textColor="@color/white"
-        style="?android:attr/borderlessButtonStyle"/>
+        android:textSize="@dimen/font_medium"
+        android:background="@drawable/app_button"/>
 
 </RelativeLayout>

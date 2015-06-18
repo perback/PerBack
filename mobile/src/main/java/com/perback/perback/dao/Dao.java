@@ -20,6 +20,7 @@ public class Dao extends BaseDao {
     private static final String IP = "Dao.UserIp";
     private static final String EAN_SESSION = "Dao.EanSession";
     private static final String PLACES_RADIUS = "Dao.PlacesRadius";
+    private static final String TRIP_STARTED = "trip_started";
 
     private static Dao instance;
     private static ArrayList<Trip> trips;
@@ -138,6 +139,16 @@ public class Dao extends BaseDao {
         if (read(StorageMethod.InternalFiles, STEPS) == null)
             return 0;
         return (int) read(StorageMethod.InternalFiles, STEPS);
+    }
+
+    public void writeIsTripStarted(boolean isTripStarted) {
+        write(StorageMethod.InternalFiles, isTripStarted, TRIP_STARTED);
+    }
+
+    public boolean isTripStarted() {
+        if (read(StorageMethod.InternalFiles, TRIP_STARTED) == null)
+            return false;
+        return (boolean) read(StorageMethod.InternalFiles, TRIP_STARTED);
     }
 
 }

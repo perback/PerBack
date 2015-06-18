@@ -73,7 +73,10 @@
                         android:id="@+id/btn_login"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/button_height"
-                        android:text="@string/login" />
+                        android:text="@string/login"
+                        android:textSize="@dimen/font_medium"
+                        android:textColor="@color/white"
+                        android:background="@drawable/app_button"/>
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>

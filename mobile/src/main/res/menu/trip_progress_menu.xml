@@ -4,13 +4,13 @@
 
     <item
         android:id="@+id/action_end_flag"
-        android:icon="@drawable/ic_finish_flag"
+        android:icon="@drawable/ic_flag_checkered_white_24dp"
         android:title="phone"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_phone"
-        android:icon="@drawable/ic_phone"
+        android:icon="@drawable/ic_phone_white_24dp"
         android:title="phone"
         app:showAsAction="ifRoom" />
 </menu>

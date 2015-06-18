@@ -46,13 +46,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/edittext_height"
                     android:hint="@string/end_location"
-                    android:singleLine="true"/>
+                    android:singleLine="true"
+                    android:textCursorDrawable="@null"
+                    android:textColor="#000000"/>
 
                 <Button
                     android:id="@+id/btn_start_trip"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/button_height"
-                    android:text="@string/start_trip" />
+                    android:text="@string/start_trip"
+                    android:textSize="@dimen/font_medium"
+                    android:textColor="@color/white"
+                    android:background="@drawable/app_button"/>
             </LinearLayout>
 
         </android.support.v7.widget.CardView>

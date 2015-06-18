@@ -2,6 +2,7 @@ package com.perback.perback.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.v7.app.AlertDialog;
@@ -74,6 +75,7 @@ public class StartTripActivity extends BaseActivity implements GoogleApiClient.O
                 .addApi(Places.GEO_DATA_API)
                 .build();
         etAutocompleteEndLocation.setOnItemClickListener(mAutocompleteClickListener);
+        etAutocompleteEndLocation.setDropDownBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.grey_with_opacity)));
         mAdapter = new PlaceAutocompleteAdapter(this, android.R.layout.simple_list_item_1,
                 mGoogleApiClient, LAT_LNG_BOUNDS, null);
         etAutocompleteEndLocation.setAdapter(mAdapter);
@@ -188,6 +190,8 @@ public class StartTripActivity extends BaseActivity implements GoogleApiClient.O
                                 views.get(R.id.fl_progress).setVisibility(View.GONE);
                             }
                         });
+
+                        Dao.getInstance().writeIsTripStarted(true);
 
                         TripController.getInstance().startTrip(trip);
                         startActivity(new Intent(StartTripActivity.this, TripProgressActivity.class));

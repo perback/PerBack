@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -49,8 +51,10 @@ import com.perback.perback.activities.StartTripActivity;
 import com.perback.perback.activities.TripProgressActivity;
 import com.perback.perback.adapters.PlaceAutocompleteAdapter;
 import com.perback.perback.controllers.TripController;
+import com.perback.perback.dao.Dao;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 
 public abstract class BaseActivity extends ActionBarActivity implements GoogleApiClient.OnConnectionFailedListener {
@@ -84,7 +88,7 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
        /* initToolbar();
         setUpNavDrawer();*/
         linkUI();
-        if(views.get(R.id.collapsing_toolbar)==null) {
+        if (views.get(R.id.collapsing_toolbar) == null) {
             initToolbar();
             setUpNavDrawer();
         }
@@ -133,7 +137,26 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
                 Toast.makeText(activity, "SOS", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_end_flag:
-                Toast.makeText(activity, "END TRIP", Toast.LENGTH_SHORT).show();
+
+                new MaterialDialog.Builder(this)
+                        .title("End Trip")
+                        .content("Congratulations! You have achieved "+ new DecimalFormat("#.##").format(TripController.getInstance().getProgress())+"%" +" of your trip")
+                        .positiveText("Finish")
+                        .negativeText("Cancel")
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                Dao.getInstance().writeIsTripStarted(false);
+                                Intent intent = new Intent(BaseActivity.this, MyTripsActivity.class);
+                                startActivity(intent);
+                                activity.finish();
+                            }
+
+                            @Override
+                            public void onNegative(MaterialDialog dialog) {
+                            }
+                        }).show();
+
                 return true;
             case R.id.action_search:
                 handleToolbarSearch();
@@ -217,8 +240,13 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
                                     drawerLayout.closeDrawer(GravityCompat.START);
                                     return true;
                                 case R.id.item_start_trip:
-                                    intent = new Intent(BaseActivity.this, StartTripActivity.class);
-                                    startActivity(intent);
+                                    if (Dao.getInstance().isTripStarted()) {
+                                        intent = new Intent(BaseActivity.this, TripProgressActivity.class);
+                                        startActivity(intent);
+                                    } else {
+                                        intent = new Intent(BaseActivity.this, StartTripActivity.class);
+                                        startActivity(intent);
+                                    }
                                     drawerLayout.closeDrawer(GravityCompat.START);
                                     return true;
                                 case R.id.item_my_trips:
@@ -281,6 +309,7 @@ public abstract class BaseActivity extends ActionBarActivity implements GoogleAp
 
             etAutocompleteSeach = (AutoCompleteTextView) action.getCustomView().findViewById(R.id.et_search); //the text editor
 
+            etAutocompleteSeach.setDropDownBackgroundDrawable(new ColorDrawable(activity.getResources().getColor(R.color.white_with_opacity)));
             //this is a listener to do a search when the user clicks on search button
             etAutocompleteSeach.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
