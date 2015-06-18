@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,8 +15,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,11 +24,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.perback.perback.R;
 import com.perback.perback.activities.HealthStatusActivity;
 import com.perback.perback.activities.LoginActivity;
@@ -37,20 +47,31 @@ import com.perback.perback.activities.RegisterActivity;
 import com.perback.perback.activities.SettingsActivity;
 import com.perback.perback.activities.StartTripActivity;
 import com.perback.perback.activities.TripProgressActivity;
+import com.perback.perback.adapters.PlaceAutocompleteAdapter;
 import com.perback.perback.controllers.TripController;
 
-public abstract class BaseActivity extends ActionBarActivity {
+import java.io.IOException;
+import java.util.List;
+
+public abstract class BaseActivity extends ActionBarActivity implements GoogleApiClient.OnConnectionFailedListener {
     protected FragmentManager fragmentManager;
     protected ViewHolder views;
     private Toolbar toolbar;
     private Activity activity;
     private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
     //Search in toolbar
     private MenuItem searchAction;
     private boolean isSearchOpened = false;
-    private AutoCompleteTextView etSeach;
+    private AutoCompleteTextView etAutocompleteSeach;
+    protected GoogleApiClient mGoogleApiClient;
+    private PlaceAutocompleteAdapter mAdapter;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+
+    private static int i = 2;
+
+    private static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
+            new LatLng(43.996578, 28.295629), new LatLng(47.682693, 26.300057));
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,14 +80,9 @@ public abstract class BaseActivity extends ActionBarActivity {
             setContentView(getLayoutResId());
 
         activity = this;
-
+        initToolbar();
+        setUpNavDrawer();
         linkUI();
-
-        if (views.get(R.id.collapsing_toolbar) == null) {
-            initToolbar();
-            setUpNavDrawer();
-        }
-
         init();
         setData();
         setActions();
@@ -101,7 +117,7 @@ public abstract class BaseActivity extends ActionBarActivity {
         else if (activity.getClass().getSimpleName().equals(TripProgressActivity.class.getSimpleName()))
             inflater.inflate(R.menu.trip_progress_menu, menu);
         else inflater.inflate(R.menu.general_menu, menu);
-        ;
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -127,7 +143,6 @@ public abstract class BaseActivity extends ActionBarActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-            toolbar.setNavigationIcon(R.drawable.ic_menu);
 
             if (activity.getClass().getSimpleName().equals(LoginActivity.class.getSimpleName()))
                 getSupportActionBar().setTitle(getResources().getString(R.string.title_login_activity));
@@ -154,15 +169,14 @@ public abstract class BaseActivity extends ActionBarActivity {
         if (toolbar != null) {
             drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
             navigationView = (NavigationView) findViewById(R.id.navigation_view);
+
             if (TripController.getInstance().isMonitoring()) {
                 MenuItem menuItem = navigationView.getMenu().getItem(1);
                 menuItem.setTitle(getString(R.string.item_trip_progress));
+                menuItem.setIcon(R.drawable.ic_terrain_grey600_48dp);
             }
 
-            // c
-
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
             actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer) {
 
@@ -181,55 +195,51 @@ public abstract class BaseActivity extends ActionBarActivity {
             drawerLayout.setDrawerListener(actionBarDrawerToggle); // Drawer Listener set to the Drawer toggle
             actionBarDrawerToggle.syncState();               // Finally we set the drawer toggle sync State
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.openDrawer(GravityCompat.START);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    drawerLayout.openDrawer(GravityCompat.START);
 
-                navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        Intent intent;
-                        menuItem.setChecked(true);
-                        switch (menuItem.getItemId()) {
-                            case R.id.item_map:
-                                intent = new Intent(BaseActivity.this, MapActivity.class);
-                                startActivity(intent);
-                                drawerLayout.closeDrawer(GravityCompat.START);
-                                return true;
-                            case R.id.item_start_trip:
-                                if (TripController.getInstance().isMonitoring())
-                                    intent = new Intent(BaseActivity.this, TripProgressActivity.class);
-                                else
+                    navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                        @Override
+                        public boolean onNavigationItemSelected(MenuItem menuItem) {
+                            Intent intent;
+                            menuItem.setChecked(true);
+                            switch (menuItem.getItemId()) {
+                                case R.id.item_map:
+                                    intent = new Intent(BaseActivity.this, MapActivity.class);
+                                    startActivity(intent);
+                                    drawerLayout.closeDrawer(GravityCompat.START);
+                                    return true;
+                                case R.id.item_start_trip:
                                     intent = new Intent(BaseActivity.this, StartTripActivity.class);
-                                startActivity(intent);
-                                drawerLayout.closeDrawer(GravityCompat.START);
-                                return true;
-                            case R.id.item_my_trips:
-                                intent = new Intent(BaseActivity.this, MyTripsActivity.class);
-                                startActivity(intent);
-                                drawerLayout.closeDrawer(GravityCompat.START);
-                                return true;
-                            case R.id.item_health_status:
-                                intent = new Intent(BaseActivity.this, HealthStatusActivity.class);
-                                startActivity(intent);
-                                drawerLayout.closeDrawer(GravityCompat.START);
-                                return true;
-                            case R.id.item_settings:
-                                intent = new Intent(BaseActivity.this, SettingsActivity.class);
-                                startActivity(intent);
-                                drawerLayout.closeDrawer(GravityCompat.START);
-                                return true;
-                            default:
-                                return true;
+                                    startActivity(intent);
+                                    drawerLayout.closeDrawer(GravityCompat.START);
+                                    return true;
+                                case R.id.item_my_trips:
+                                    intent = new Intent(BaseActivity.this, MyTripsActivity.class);
+                                    startActivity(intent);
+                                    drawerLayout.closeDrawer(GravityCompat.START);
+                                    return true;
+                                case R.id.item_health_status:
+                                    intent = new Intent(BaseActivity.this, HealthStatusActivity.class);
+                                    startActivity(intent);
+                                    drawerLayout.closeDrawer(GravityCompat.START);
+                                    return true;
+                                case R.id.item_settings:
+                                    intent = new Intent(BaseActivity.this, SettingsActivity.class);
+                                    startActivity(intent);
+                                    drawerLayout.closeDrawer(GravityCompat.START);
+                                    return true;
+                                default:
+                                    return true;
+                            }
                         }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        }
     }
-
-}
 
 
     public void showMessage(String message, DialogInterface.OnClickListener clickListener) {
@@ -250,10 +260,10 @@ public abstract class BaseActivity extends ActionBarActivity {
 
             //hides the keyboard
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(etSeach.getWindowToken(), 0);
+            imm.hideSoftInputFromWindow(etAutocompleteSeach.getWindowToken(), 0);
 
             //add the search icon in the action bar
-            searchAction.setIcon(getResources().getDrawable(R.drawable.ic_search));
+            searchAction.setIcon(getResources().getDrawable(R.drawable.ic_magnify_white_24dp));
 
             isSearchOpened = false;
         } else { //open the search entry
@@ -263,30 +273,116 @@ public abstract class BaseActivity extends ActionBarActivity {
             action.setCustomView(R.layout.search_toolbar_layout);//add the custom view
             action.setDisplayShowTitleEnabled(false); //hide the title
 
-            etSeach = (AutoCompleteTextView) action.getCustomView().findViewById(R.id.et_search); //the text editor
+            etAutocompleteSeach = (AutoCompleteTextView) action.getCustomView().findViewById(R.id.et_search); //the text editor
 
             //this is a listener to do a search when the user clicks on search button
-            etSeach.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            etAutocompleteSeach.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        Toast.makeText(activity, etSeach.getText().toString(), Toast.LENGTH_SHORT).show();
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(etAutocompleteSeach.getWindowToken(), 0);
+
+                        Geocoder geocoder = new Geocoder(BaseActivity.this);
+                        final String searchedLocation = etAutocompleteSeach.getText().toString();
+                        if (!TextUtils.isEmpty(searchedLocation)) {
+                            List<Address> search_addrs = null;
+                            try {
+                                search_addrs = geocoder.getFromLocationName(searchedLocation, 1);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if (search_addrs != null && search_addrs.size() > 0) {
+                                Address address = search_addrs.get(0);
+                                ((MapActivity) activity).addMarkerOnMap(address.getLatitude(), address.getLongitude(), searchedLocation);
+                            }
+                        }
                         return true;
                     }
                     return false;
                 }
             });
 
-            etSeach.requestFocus();
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .enableAutoManage(this, i++ /* clientId */, this)
+                    .addApi(Places.GEO_DATA_API)
+                    .build();
+            etAutocompleteSeach.setOnItemClickListener(mAutocompleteClickListener);
+            mAdapter = new PlaceAutocompleteAdapter(this, android.R.layout.simple_list_item_1,
+                    mGoogleApiClient, LAT_LNG_BOUNDS, null);
+            etAutocompleteSeach.setAdapter(mAdapter);
+
+            etAutocompleteSeach.requestFocus();
 
             //open the keyboard focused in the etSearch
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(etSeach, InputMethodManager.SHOW_IMPLICIT);
+            imm.showSoftInput(etAutocompleteSeach, InputMethodManager.SHOW_IMPLICIT);
 
             //add the close icon
-            searchAction.setIcon(getResources().getDrawable(R.drawable.ic_search));
+            searchAction.setIcon(getResources().getDrawable(R.drawable.ic_window_close_white_24dp));
 
             isSearchOpened = true;
         }
+    }
+
+    private AdapterView.OnItemClickListener mAutocompleteClickListener
+            = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            /*
+             Retrieve the place ID of the selected item from the Adapter.
+             The adapter stores each Place suggestion in a PlaceAutocomplete object from which we
+             read the place ID.
+              */
+            final PlaceAutocompleteAdapter.PlaceAutocomplete item = mAdapter.getItem(position);
+            final String placeId = String.valueOf(item.placeId);
+
+            /*
+             Issue a request to the Places Geo Data API to retrieve a Place object with additional
+              details about the place.
+              */
+            PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
+                    .getPlaceById(mGoogleApiClient, placeId);
+            placeResult.setResultCallback(mUpdatePlaceDetailsCallback);
+
+            Toast.makeText(getApplicationContext(), "Clicked: " + item.description,
+                    Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    private ResultCallback<PlaceBuffer> mUpdatePlaceDetailsCallback
+            = new ResultCallback<PlaceBuffer>() {
+        @Override
+        public void onResult(PlaceBuffer places) {
+            if (!places.getStatus().isSuccess()) {
+                // Request did not complete successfully
+                places.release();
+                return;
+            }
+            // Get the Place object from the buffer.
+            final Place place = places.get(0);
+
+            // Format details of the place for display and show it in a TextView.
+            /*mPlaceDetailsText.setText(formatPlaceDetails(getResources(), place.getName(),
+                    place.getId(), place.getAddress(), place.getPhoneNumber(),
+                    place.getWebsiteUri()));*/
+
+            // Display the third party attributions if set.
+            final CharSequence thirdPartyAttribution = places.getAttributions();
+            if (thirdPartyAttribution == null) {
+//                mPlaceDetailsAttribution.setVisibility(View.GONE);
+            } else {
+//                mPlaceDetailsAttribution.setVisibility(View.VISIBLE);
+//                mPlaceDetailsAttribution.setText(Html.fromHtml(thirdPartyAttribution.toString()));
+            }
+
+
+            places.release();
+        }
+    };
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }

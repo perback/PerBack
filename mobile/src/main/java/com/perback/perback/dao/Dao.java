@@ -29,7 +29,7 @@ public class Dao extends BaseDao {
     }
 
     public static void init(Context context) {
-        if(instance == null) {
+        if (instance == null) {
             instance = new Dao(context);
         }
     }
@@ -76,16 +76,16 @@ public class Dao extends BaseDao {
     }
 
     public ArrayList<Trip> getTrips() {
-        if(trips==null) {
+        if (trips == null) {
             trips = readTrips();
         }
         return trips;
     }
 
     public void saveTrip(Trip trip) {
-        if(trips==null) {
+        if (trips == null) {
             trips = readTrips();
-            if(trips==null)
+            if (trips == null)
                 trips = new ArrayList<>();
         }
         trips.add(trip);
@@ -125,8 +125,8 @@ public class Dao extends BaseDao {
     }
 
     public Integer readDistanceProximityPosition() {
-//        if (read(StorageMethod.InternalFiles, DISTANCE_PROXIMITY) == null)
-//            return 0;
+        if (read(StorageMethod.InternalFiles, DISTANCE_PROXIMITY) == null)
+            return 0;
         return (Integer) read(StorageMethod.InternalFiles, DISTANCE_PROXIMITY);
     }
 
@@ -135,6 +135,8 @@ public class Dao extends BaseDao {
     }
 
     public int readNoOfSteps() {
+        if (read(StorageMethod.InternalFiles, STEPS) == null)
+            return 0;
         return (int) read(StorageMethod.InternalFiles, STEPS);
     }
 

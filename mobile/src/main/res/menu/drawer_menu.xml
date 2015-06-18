@@ -2,26 +2,23 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/item_map"
-            android:checked="true"
-            android:icon="@drawable/ic_menu_map"
+            android:icon="@drawable/ic_map_grey600_48dp"
             android:title="@string/item_map" />
         <item
             android:id="@+id/item_start_trip"
-            android:icon="@drawable/ic_start_flag"
+            android:icon="@drawable/ic_flag_outline_grey600_48dp"
             android:title="@string/item_start_trip" />
         <item
             android:id="@+id/item_my_trips"
-            android:checked="true"
-            android:icon="@drawable/ic_start_flag"
+            android:icon="@drawable/ic_playlist_plus_grey600_48dp"
             android:title="@string/item_my_trips" />
         <item
             android:id="@+id/item_health_status"
-            android:icon="@drawable/ic_health_status"
+            android:icon="@drawable/ic_heart_outline_grey600_48dp"
             android:title="@string/item_health_status" />
         <item
             android:id="@+id/item_settings"
-            android:checked="true"
-            android:icon="@drawable/ic_settings"
+            android:icon="@drawable/ic_settings_grey600_48dp"
             android:title="@string/item_settings" />
     </group>
 </menu>

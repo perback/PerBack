@@ -21,6 +21,10 @@ public class Trip extends BaseSerializable {
     protected long startTime;
     protected long endTime;
 
+    public Trip(){
+        tripPoints=new ArrayList<>();
+    }
+
     protected ArrayList<TripPoint> tripPoints;
 
     public ArrayList<TripPoint> getTripPoints() {

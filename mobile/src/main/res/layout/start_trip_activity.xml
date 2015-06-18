@@ -37,14 +37,14 @@
                     android:id="@+id/et_start_location"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/edittext_height"
+                    android:visibility="gone"
                     android:hint="@string/start_location"
                     android:singleLine="true"/>
 
-                <EditText
+                <AutoCompleteTextView
                     android:id="@+id/et_end_location"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/edittext_height"
-                    android:visibility="gone"
                     android:hint="@string/end_location"
                     android:singleLine="true"/>
 

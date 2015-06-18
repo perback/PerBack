@@ -31,6 +31,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -73,6 +74,7 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
     protected int markerDetailsHeight;
     protected HashMap<Marker, Object> markerTags;
     protected boolean markerDetailsVisible = false;
+
 
     @Override
     protected int getLayoutResId() {
@@ -390,6 +392,19 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
         listDataChild.put(listDataHeader.get(8), shopping);
         listDataChild.put(listDataHeader.get(9), sports);
         listDataChild.put(listDataHeader.get(10), transport);
+    }
+
+    public void addMarkerOnMap(double latitude, double longitude, String title) {
+        MarkerOptions markerOptions;
+        markerOptions = new MarkerOptions();
+        markerOptions.position(new LatLng(latitude, longitude));
+        markerOptions.title(title);
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        map.addMarker(markerOptions);
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude),15);
+        map.animateCamera(cameraUpdate);
+
     }
 
 

@@ -29,7 +29,7 @@ public class PlacesApiWrapper {
         TripPoint locationPoint = Dao.getInstance().readLocation();
         String location = "" + locationPoint.getLat() + "," + locationPoint.getLng();
         Integer radius = Dao.getInstance().readDistanceProximityPosition();
-        if (radius == null)
+        if (radius == 0)
             radius = 500;
         placesApi.nearbySearch(API_KEY, location, radius, name, getTypesStr(types), callback);
     }
