@@ -17,3 +17,13 @@ android:
     - extra-google-m2repository
     - extra-android-m2repository
     - addon-google_apis-google-23
+
+sudo: false
+
+script: ./gradlew build
+
+# cache between builds
+cache:
+  directories:
+  - $HOME/.m2
+  - $HOME/.gradle
