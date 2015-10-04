@@ -1,13 +1,14 @@
 apply plugin: 'com.android.application'
 
+def  supportVersion = '23.0.1'
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "com.perback.perback"
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -29,16 +30,18 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     wearApp project(':wear')
-    compile 'com.android.support:appcompat-v7:22.1.1'
-    compile 'com.google.android.gms:play-services:7.3.0'
+    compile 'com.android.support:appcompat-v7:'+supportVersion
+    compile 'com.google.android.gms:play-services:8.1.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
 
     compile 'frankiesardo:icepick:3.0.2'
     provided 'frankiesardo:icepick-processor:3.0.2'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
 
-    compile 'com.android.support:design:22.2.0'
+    compile 'com.android.support:design:'+supportVersion
     compile 'com.afollestad:material-dialogs:0.7.6.0'
-    compile 'com.android.support:cardview-v7:21.0.+'
-    compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile 'com.android.support:cardview-v7:'+supportVersion
+    compile 'com.android.support:recyclerview-v7:'+supportVersion
+
+    compile 'io.reactivex:rxandroid:1.0.1'
 }
