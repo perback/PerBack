@@ -5,3 +5,7 @@
 .DS_Store
 /build
 /captures
+.idea/
+git.iml
+mobile/mobile.iml
+wear/wear.iml
