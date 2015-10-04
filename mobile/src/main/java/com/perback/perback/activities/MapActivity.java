@@ -1,9 +1,11 @@
 package com.perback.perback.activities;
 
 import android.animation.Animator;
+import android.app.Dialog;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -29,6 +31,10 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -83,14 +89,19 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback {
     private RelativeLayout rlOpenFilterMenu;
     private RelativeLayout rlRemoveMarkers;
 
-
     @Override
     protected int getLayoutResId() {
         return R.layout.map_activity;
     }
 
-    public static void launch(BaseActivity activity) {
-        activity.startActivity(new Intent(activity, MapActivity.class));
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+        if(resultCode != ConnectionResult.SUCCESS) {
+            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, 123);
+            dialog.show();
+        }
+        super.onCreate(savedInstanceState);
     }
 
     @Override
